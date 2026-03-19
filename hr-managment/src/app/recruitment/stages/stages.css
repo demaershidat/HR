@@ -1,0 +1,178 @@
+:host {
+  display: block;
+  background: #ffffff;
+  min-height: 100vh;
+  direction: rtl;
+  font-family: "Segoe UI", Tahoma;
+  color: #222;
+}
+
+.admin-layout {
+  padding: 40px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.modern-select {
+  padding: 11px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 14px;
+  min-width: 250px;
+  outline: none;
+}
+
+.stages-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.stage-row-container {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,.03);
+}
+
+.stage-row-header {
+  background: #fafafa;
+  padding: 15px 25px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stage-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stage-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.stage-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+
+.status-active {
+  background: #111;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.candidates-horizontal-scroll {
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  min-height: 120px;
+  align-items: center;
+}
+
+.mini-candidate-card {
+  min-width: 280px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 15px;
+  transition: .2s;
+}
+
+.mini-candidate-card:hover {
+  border-color: #111;
+  box-shadow: 0 5px 15px rgba(0,0,0,.05);
+}
+
+.card-content {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.candidate-avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #eee;
+}
+
+.candidate-details h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #111;
+}
+
+.job-tag-text {
+  font-size: 12px;
+  color: #777;
+  display: block;
+  margin-top: 3px;
+}
+
+.rating-stars {
+  margin-top: 8px;
+  color: #ddd;
+  cursor: pointer;
+}
+
+.rating-stars span {
+  font-size: 18px;
+  margin-left: 2px;
+}
+
+.rating-stars span.filled {
+  color: #111; 
+}
+
+.card-footer-actions {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px dashed #eee;
+}
+
+.stage-dropdown {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  font-size: 12px;
+  background: #fdfdfd;
+  cursor: pointer;
+}
+
+.empty-state-small {
+  color: #aaa;
+  font-size: 13px;
+  padding: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.candidates-horizontal-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.candidates-horizontal-scroll::-webkit-scrollbar-thumb {
+  background: #eee;
+  border-radius: 10px;
+}

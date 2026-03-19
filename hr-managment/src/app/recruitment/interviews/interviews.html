@@ -1,0 +1,107 @@
+<div class="admin-layout">
+
+  <header class="main-header">
+    <h2>إدارة المقابلات</h2>
+    <div class="actions">
+      <input type="text" placeholder="بحث..." (input)="onSearch($event)">
+      <button class="btn-primary" (click)="openScheduleModal()">+ مقابلة</button>
+    </div>
+  </header>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>المرشح</th>
+          <th>الوظيفة</th>
+          <th>التاريخ</th>
+          <th>الوقت</th>
+          <th>الوصف</th>
+          <th>الحالة</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of interviewees" [class.row-finished]="item.is_finished==1">
+          <td class="user">
+            <img 
+              [src]="item.profile_image_url ? 'http://localhost:3000/uploads/' + item.profile_image_url : 'assets/unknown.png'"
+              (error)="handleImageError($event)">
+            {{item.full_name}}
+          </td>
+          <td>{{item.display_job}}</td>
+          <td>{{item.interview_date | date:'yyyy-MM-dd'}}</td>
+          <td>{{item.interview_time}}</td>
+          <td class="desc">{{item.interview_description || '—'}}</td>
+          <td>
+            <span [class.done]="item.is_finished==1" [class.pending]="item.is_finished!=1">
+              {{item.is_finished==1 ? 'تمت' : 'انتظار'}}
+            </span>
+          </td>
+          <td>
+            <button (click)="openScheduleModal(item)">تعديل</button>
+            <button 
+              class="danger"
+              [class.disabled-btn]="item.is_from_stages"
+              (click)="deleteInterview(item)">
+              حذف
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal">
+      <h3>{{isEditMode ? 'تعديل تفاصيل' : 'إضافة'}} مقابلة</h3>
+
+      <form (ngSubmit)="saveSchedule()">
+        <div class="error-box" *ngIf="errorMessage">
+          {{errorMessage}}
+        </div>
+
+        <div class="form-group" *ngIf="isEditMode">
+          <label>المرشح:</label>
+          <input type="text" [value]="getCandidateName(formData.candidate_id)" disabled>
+        </div>
+
+        <div class="form-group" *ngIf="!isEditMode">
+          <label>اختيار مرشح:</label>
+          <select [(ngModel)]="formData.candidate_id" name="candidate">
+            <option value="" disabled>اختر المرشح</option>
+            <option *ngFor="let c of allCandidates" [value]="c.id">{{c.full_name}}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>تاريخ المقابلة:</label>
+          <input type="date" [(ngModel)]="formData.interview_date" name="date">
+        </div>
+
+        <div class="form-group">
+          <label>وقت المقابلة:</label>
+          <input type="time" [(ngModel)]="formData.interview_time" name="time">
+        </div>
+
+        <textarea placeholder="ملاحظات أو وصف المقابلة"
+          [(ngModel)]="formData.interview_description" name="desc">
+        </textarea>
+
+        <div class="switch-container">
+          <span>حالة المقابلة (مكتملة):</span>
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="formData.is_finished" name="finished">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeModal()">إلغاء</button>
+          <button type="submit" class="btn-save">حفظ التغييرات</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

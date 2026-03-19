@@ -1,0 +1,94 @@
+:root {
+  --primary: #e85a3a;
+  --primary-dark: #c94a2d;
+  --bg-body: #f4f7fe;
+  --card-bg: #ffffff;
+  --text-main: #2d3748;
+  --text-muted: #718096;
+  --border-color: #e2e8f0;
+  --shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.admin-layout { padding: 25px; direction: rtl; background: var(--bg-body); min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
+
+.main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 10px; }
+.main-header h2 { font-size: 24px; font-weight: 800; color: var(--text-main); }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.actions input { padding: 10px 15px; border-radius: 10px; border: 1px solid #ddd; width: 250px; transition: 0.3s; }
+.actions input:focus { outline: none; border-color: var(--primary); }
+
+.btn-primary { background: black; color: white(176, 16, 16); border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.btn-primary:hover { background: black; transform: translateY(-1px); }
+
+.table-wrapper { overflow-x: auto; background: var(--card-bg); border-radius: 15px; box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; min-width: 800px; }
+th { background: #f8fafc; padding: 14px; font-size: 13px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+
+tr { transition: 0.2s; }
+tr:hover { background: #f9fafb; transform: scale(1.01); }
+
+.user { display: flex; align-items: center; gap: 10px; }
+.user img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+
+.desc { max-width: 220px; color: #666; font-size: 13px; }
+
+.done { background: #22c55e; color: white; padding: 4px 10px; border-radius: 10px; font-size: 12px; }
+.pending { background: #f59e0b; color: white; padding: 4px 10px; border-radius: 10px; font-size: 12px; }
+
+button { padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+button:hover { opacity: 0.85; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+.danger { background: #dc2626; color: white; }
+
+.row-finished { opacity: 0.6; background: #f1f5f9; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 999; }
+.modal { background: white; padding: 20px; width: 95%; max-width: 420px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: fadeIn 0.2s ease-in-out; }
+@keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+
+.modal h3 { margin-bottom: 10px; }
+.modal form { display: flex; flex-direction: column; gap: 10px; }
+.modal input, .modal select, .modal textarea { padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; }
+.modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: var(--primary); }
+.modal textarea { resize: none; min-height: 70px; }
+
+.error-box { background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center; }
+
+.switch { display: flex; align-items: center; gap: 10px; }
+.switch input { transform: scale(1.2); }
+
+.modal-actions { display: flex; justify-content: space-between; margin-top: 10px; }
+
+.disabled-btn { opacity: 0.5; cursor: help !important; }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 5px; }
+.form-group label { font-size: 13px; font-weight: bold; color: var(--text-muted); }
+
+.switch-container { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 10px; }
+
+.btn-cancel { background: #eee; color: #333; }
+.btn-save { background: var(--primary); color: white; }
+
+@media(max-width:768px) {
+  .admin-layout { padding: 15px; }
+  .main-header { flex-direction: column; align-items: stretch; }
+  .actions { width: 100%; }
+  .actions input { width: 100%; }
+  .btn-primary { width: 100%; }
+  table { min-width: 600px; }
+}
+.disabled-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.row-finished {
+  background-color: #e0ffe0;
+}
+.done {
+  color: rgb(255, 255, 255);
+}
+.pending {
+  color: rgb(255, 255, 255);
+}

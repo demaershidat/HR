@@ -1,0 +1,42 @@
+<aside class="app-sidebar">
+  <div class="sidebar-header">
+    <img src="assets/solidSoft.png" alt="Logo" class="sidebar-logo-img" />
+    <span class="brand-name">Solid Soft</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+          <i class="fas fa-home"></i> <span>لوحة التحكم</span>
+        </a>
+      </li>
+
+      <li class="has-submenu">
+        <a (click)="toggleRecruitment()" class="parent-link" [class.active-parent]="isRecruitmentOpen">
+          <div class="link-main">
+            <i class="fas fa-briefcase"></i>
+            <span>التوظيف</span>
+          </div>
+          <i class="fas fa-chevron-left arrow" [class.rotate]="isRecruitmentOpen"></i>
+        </a>
+        
+        <ul class="submenu" [class.show]="isRecruitmentOpen">
+          <li><a routerLink="/recruitment/dashboardRec" routerLinkActive="active-sub">لوحة التحكم</a></li>
+          <li><a routerLink="/recruitment/jobManagment" routerLinkActive="active-sub">إدارة الوظائف</a></li>
+          <li><a routerLink="/recruitment/candidates" routerLinkActive="active-sub">المرشحون</a></li>
+          <li><a routerLink="/recruitment/stages" routerLinkActive="active-sub">المراحل</a></li>
+          <li><a routerLink="/recruitment/interviews" routerLinkActive="active-sub">المقابلات</a></li>
+          <li><a routerLink="/recruitment/onboarding" routerLinkActive="active-sub">توجيه الموظف الجديد</a></li>
+        </ul>
+      </li>
+
+      <li><a routerLink="/employees" routerLinkActive="active-link"><i class="fas fa-users"></i> <span>الموظفين</span></a></li>
+      <li><a routerLink="/salaries" routerLinkActive="active-link"><i class="fas fa-money-bill-wave"></i> <span>الرواتب</span></a></li>
+      <li><a routerLink="/attendance" routerLinkActive="active-link"><i class="fas fa-calendar-check"></i> <span>الحضور</span></a></li>
+      <li><a routerLink="/leaves" routerLinkActive="active-link"><i class="fas fa-calendar-alt"></i> <span>الإجازات</span></a></li>
+      <li><a routerLink="/assets" routerLinkActive="active-link"><i class="fas fa-boxes"></i> <span>الأصول</span></a></li>
+      <li><a routerLink="/terminated" routerLinkActive="active-link"><i class="fas fa-user-slash"></i> <span>المنتهية خدماتهم</span></a></li>
+    </ul>
+  </nav>
+</aside>

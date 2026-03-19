@@ -1,0 +1,8 @@
+.app-footer {
+  background-color: #000;
+  color: #fff;
+  padding: clamp(10px, 2vh, 20px) 0;
+  text-align: center;
+  width: 100%;
+  font-size: clamp(14px, 1.2vw, 18px);
+}

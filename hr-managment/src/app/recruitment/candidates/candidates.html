@@ -1,0 +1,168 @@
+<div class="candidates-container">
+
+  <div class="header-modern">
+    <div class="title-group">
+      <h1>إدارة المرشحين</h1>
+      <p>متابعة طلبات التوظيف</p>
+    </div>
+    <button class="btn-add" (click)="openAddModal()">+ إضافة مرشح</button>
+  </div>
+
+  <div class="candidates-grid">
+    <div class="candidate-card" *ngFor="let c of candidates">
+
+      <div class="card-header">
+        <div class="avatar">
+          <img 
+            [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'"
+            class="circular-img"
+            (error)="handleImageError($event)">
+        </div>
+
+        <div class="menu-wrapper">
+          <button class="dots" (click)="toggleMenu($event,c)">⋮</button>
+
+          <div class="dropdown-panel" *ngIf="c.showMenu">
+            <button class="menu-item" (click)="viewCandidate(c)">عرض التفاصيل</button>
+            <button class="menu-item" (click)="editCandidate(c)">تعديل البيانات</button>
+            <button class="menu-item delete" (click)="confirmDelete(c.id)">حذف المرشح</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h3>{{c.full_name}}</h3>
+        <div class="info-row">{{c.email}}</div>
+        <div class="info-row">{{c.phone}}</div>
+        <div class="job-tag">{{ getDisplayJobTitle(c) }}</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal">
+
+      <div class="modal-header">
+        <h2>{{ isViewMode ? 'تفاصيل المرشح' : 'بيانات المرشح' }}</h2>
+        <button class="close-x" (click)="closeModal()">×</button>
+      </div>
+
+      <div class="modal-body-scroll">
+
+      <div class="center-avatar">
+  <div class="avatar-upload">
+
+    <img 
+      [src]="previewUrl 
+        ? previewUrl 
+        : (candidateForm.get('profile_image_url')?.value 
+            ? 'http://localhost:3000/uploads/' + candidateForm.get('profile_image_url')?.value 
+            : 'assets/unknown.png')" 
+      class="preview-circular"
+      (error)="handleImageError($event)">
+
+    <label *ngIf="!isViewMode" class="upload-btn">
+      تغيير الصورة
+      <input type="file" (change)="onPhotoSelect($event)" hidden>
+    </label>
+
+    <button 
+      *ngIf="!isViewMode && (previewUrl || candidateForm.get('profile_image_url')?.value)" 
+      class="delete-img-btn"
+      (click)="removeImage()">
+      حذف الصورة
+    </button>
+
+  </div>
+</div>
+
+        <form [formGroup]="candidateForm">
+          <div class="form-grid">
+
+            <div class="field full">
+              <label>الاسم الرباعي الكامل</label>
+              <input type="text" formControlName="full_name">
+            </div>
+
+            <div class="field">
+              <label>البريد الإلكتروني</label>
+              <input type="email" formControlName="email">
+            </div>
+
+            <div class="field">
+              <label>رقم الهاتف</label>
+              <input type="text" formControlName="phone">
+            </div>
+
+            <div class="field">
+              <label>مكان السكن</label>
+              <select formControlName="address">
+                <option value="">اختر المحافظة</option>
+                <option *ngFor="let g of jordanGovernorates" [value]="g">{{g}}</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>التخصص الجامعي</label>
+              <input type="text" formControlName="university_major">
+            </div>
+
+            <div class="field">
+              <label>سنة التخرج</label>
+              <input type="number" formControlName="graduation_year">
+            </div>
+
+            <div class="field full">
+              <label>الوظيفة</label>
+              <select formControlName="job_id" (change)="onJobSelect($event)">
+                <option [value]="null">اختر</option>
+                <option *ngFor="let j of jobs" [value]="j.id">{{j.job_title}}</option>
+                <option value="other">أخرى</option>
+              </select>
+
+              <input *ngIf="isCustomJob" formControlName="custom_job" placeholder="وظيفة أخرى">
+            </div>
+
+            <div class="field full">
+              <label>
+                <input type="checkbox" formControlName="has_experience">
+                لديه خبرة
+              </label>
+
+              <div *ngIf="candidateForm.get('has_experience')?.value" class="form-grid mt-8">
+                <div class="field">
+                  <label>المسمى</label>
+                  <input type="text" formControlName="exp_position">
+                </div>
+
+                <div class="field">
+                  <label>الشركة</label>
+                  <input type="text" formControlName="exp_company_name">
+                </div>
+
+                <div class="field full">
+                  <label>المدة</label>
+                  <input type="text" formControlName="exp_period">
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>CV</label>
+              <input type="file" (change)="onFileSelect($event)">
+            </div>
+
+          </div>
+        </form>
+
+      </div>
+
+      <button class="btn-primary-save" (click)="submitCandidate()" *ngIf="!isViewMode">
+        حفظ
+      </button>
+
+    </div>
+  </div>
+
+</div>

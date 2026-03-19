@@ -1,0 +1,62 @@
+<div class="admin-layout">
+  <header class="main-header">
+    <div class="title-group">
+      <h1 style="font-size: 24px; font-weight: 700; margin: 0;">مراحل التوظيف</h1>
+      <p style="color: #777; margin-top: 5px;">إدارة وتنظيم حالة المرشحين بناءً على المراحل</p>
+    </div>
+    <div class="header-actions">
+      <div class="field">
+        <select [(ngModel)]="selectedFilter" (change)="filterCandidates()" class="modern-select">
+          <option value="all">جميع الوظائف</option>
+          <optgroup label="الوظائف الرسمية">
+            <option *ngFor="let job of jobs" [value]="job.id">{{ job.job_title }}</option>
+          </optgroup>
+          <optgroup label="وظائف أخرى">
+            <option *ngFor="let custom of uniqueCustomJobs" [value]="custom">{{ custom }}</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="stages-vertical-list">
+    <div class="stage-row-container" *ngFor="let stage of stages">
+      <div class="stage-row-header">
+        <div class="stage-info">
+          <span class="stage-dot" [style.background]="stage.color"></span>
+          <h3>{{ stage.name }}</h3>
+        </div>
+        <span class="status-active">{{ getCandidatesByStage(stage.id).length }} مرشحين</span>
+      </div>
+
+      <div class="candidates-horizontal-scroll">
+        <div class="mini-candidate-card" *ngFor="let c of getCandidatesByStage(stage.id)">
+          <div class="card-content">
+            <img [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'" 
+                 (error)="handleImageError($event)" class="candidate-avatar">
+            <div class="candidate-details">
+              <h4>{{ c.full_name }}</h4>
+              <span class="job-tag-text">{{ getJobTitle(c) }}</span>
+              
+              <div class="rating-stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      (click)="setRating(c, star)" 
+                      [class.filled]="star <= c.rating">★</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer-actions">
+            <select [ngModel]="c.current_stage" (change)="updateStage(c, $any($event.target).value)" class="stage-dropdown">
+              <option *ngFor="let s of stages" [value]="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="empty-state-small" *ngIf="getCandidatesByStage(stage.id).length === 0">
+          لا يوجد مرشحين حالياً في هذه المرحلة
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

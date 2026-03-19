@@ -1,0 +1,19 @@
+:host { display: block; background: #fdfdfd; min-height: 100vh; direction: rtl; font-family: "Segoe UI", Tahoma; color: #222; }
+.admin-layout { padding: 40px; max-width: 1300px; margin: auto; }
+.main-header { margin-bottom: 30px; border-bottom: 2px solid #111; padding-bottom: 15px; }
+.main-header h1 { font-size: 26px; font-weight: 800; margin: 0; }
+.main-header p { color: #666; margin-top: 5px; }
+.table-card { border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.05); }
+.modern-table { width: 100%; border-collapse: collapse; }
+.modern-table th { background: #111; color: #fff; padding: 15px; text-align: right; font-size: 14px; }
+.modern-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: middle; }
+.user-info { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+.table-avatar { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid #eee; }
+.job-text { font-weight: 700; color: #111; }
+.status-pending { background: #f0f0f0; color: #666; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+.status-sent { background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+.status-active { background: #e7f7ee; color: #0a7a3b; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+.status-expired { background: #fdecec; color: #c40000; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+.status-joined { background: #111; color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+.status-dropdown { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; font-family: inherit; font-size: 13px; cursor: pointer; width: 140px; }
+.empty-state { text-align: center; padding: 50px; color: #999; }

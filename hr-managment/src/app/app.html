@@ -1,0 +1,13 @@
+<div class="main-layout">
+  <app-sidebar *ngIf="showHeaderFooter"></app-sidebar>
+
+  <div class="content-wrapper" [class.no-sidebar]="!showHeaderFooter">
+    <app-header *ngIf="showHeaderFooter"></app-header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet> 
+    </main>
+
+    <app-footer *ngIf="showHeaderFooter"></app-footer>
+  </div>
+</div>

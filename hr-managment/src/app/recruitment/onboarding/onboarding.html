@@ -1,0 +1,58 @@
+<div class="admin-layout">
+  <header class="main-header">
+    <div class="title-group">
+      <h1>توجية الموظف الجديد</h1>
+      <p>إدارة العقود ومتابعة انضمام الموظفين الجدد</p>
+    </div>
+  </header>
+
+  <div class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>الموظف</th>
+          <th>الوظيفة</th>
+          <th>تاريخ الإجراء</th>
+          <th>حالة العقد</th>
+          <th>تغيير الحالة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of hiredCandidates">
+          <td>
+            <div class="user-info">
+              <img [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'" 
+                   (error)="handleImageError($event)" class="table-avatar">
+              <span>{{ c.full_name }}</span>
+            </div>
+          </td>
+          <td><span class="job-text">{{ c.display_job }}</span></td>
+          <td style="white-space: nowrap;">
+            {{ c.contract_sent_date ? (c.contract_sent_date | date:'yyyy-MM-dd HH:mm') : '---' }}
+          </td>
+          <td>
+            <span [ngClass]="{
+              'status-pending': c.contract_status === 'لم يرسل',
+              'status-sent': c.contract_status === 'تم الإرسال',
+              'status-active': c.contract_status === 'مقبول',
+              'status-expired': c.contract_status === 'مرفوض',
+              'status-joined': c.contract_status === 'تم الانضمام'
+            }">
+              {{ c.contract_status }}
+            </span>
+          </td>
+          <td>
+            <select class="status-dropdown" [ngModel]="c.contract_status" (ngModelChange)="onStatusChange(c, $event)">
+              <option *ngFor="let status of contractStatuses" [value]="status.value">
+                {{ status.label }}
+              </option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="empty-state" *ngIf="hiredCandidates.length === 0">
+      لا يوجد مرشحين حالياً
+    </div>
+  </div>
+</div>
