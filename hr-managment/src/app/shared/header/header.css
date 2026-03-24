@@ -1,12 +1,16 @@
 .app-header {
   background-color: #ffffff;
-  padding: 0 25px;
+  padding: 0 30px;
   width: 100%;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(138, 43, 226, 0.2);
   box-sizing: border-box;
-  height: 70px;
+  height: 75px;
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  backdrop-filter: blur(10px);
 }
 
 .header-container {
@@ -16,68 +20,121 @@
   width: 100%;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-}
-
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .icon-item {
   position: relative;
   cursor: pointer;
-  font-size: 18px;
-  color: #555;
+  font-size: 19px;
+  color: #888;
   display: flex;
   align-items: center;
+  transition: all 0.3s ease;
+}
+
+.icon-item:hover {
+  color: #8a2be2;
+  text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
 }
 
 .badge {
   position: absolute;
-  top: -7px;
-  right: -7px;
-  background-color: #ff3b30;
+  top: -5px;
+  right: -8px;
+  background: #e31515;
   color: white;
-  font-size: 9px;
-  padding: 2px 5px;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
   font-weight: bold;
+  border: 2px solid #0a0a0a;
 }
 
-.lang-icon {
-  font-weight: bold;
-  font-size: 13px;
-  border: 1.5px solid #444;
-  padding: 1px 5px;
-  border-radius: 5px;
+.lang-box {
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid #333;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #aaa;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  border-right: 1px solid #222;
+  padding-right: 15px;
+}
+
+.user-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-role {
+  color: #8a2be2;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .logout-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #fff1f0; 
-  color: #e74c3c;
-  border: 1px solid #ffccc7;
-  padding: px 16px;
+  background: rgba(231, 76, 60, 0.1);
+  color: #ff4d4d;
+  border: 1px solid rgba(255, 77, 77, 0.2);
+  padding: 10px 16px;
   border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 13px;
   transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  background-color: #ff4d4f;
-  color: #ffffff;
-  border-color: #ff4d4f;
-  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
+  background: #ff4d4d;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255, 77, 77, 0.3);
 }
 
-.logout-btn i {
-  font-size: 16px;
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 15px;
+    height: 65px;
+  }
+
+  .user-info {
+    display: none;
+  }
+
+  .logout-btn span {
+    display: none;
+  }
+
+  .logout-btn {
+    padding: 10px;
+    border-radius: 50%;
+  }
 }

@@ -1,168 +1,201 @@
-<div class="candidates-container">
-
+<div class="candidates-container" dir="rtl">
   <div class="header-modern">
     <div class="title-group">
       <h1>إدارة المرشحين</h1>
-      <p>متابعة طلبات التوظيف</p>
+      <p>متابعة طلبات التوظيف لشركة Solid Soft</p>
     </div>
-    <button class="btn-add" (click)="openAddModal()">+ إضافة مرشح</button>
+    <button class="btn-add" (click)="openAddModal()">
+      <i class="fas fa-plus"></i>مرشح</button>
   </div>
 
   <div class="candidates-grid">
     <div class="candidate-card" *ngFor="let c of candidates">
-
       <div class="card-header">
-        <div class="avatar">
+        <div class="avatar-wrapper">
           <img 
             [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'"
             class="circular-img"
             (error)="handleImageError($event)">
         </div>
 
-        <div class="menu-wrapper">
-          <button class="dots" (click)="toggleMenu($event,c)">⋮</button>
-
-          <div class="dropdown-panel" *ngIf="c.showMenu">
-            <button class="menu-item" (click)="viewCandidate(c)">عرض التفاصيل</button>
-            <button class="menu-item" (click)="editCandidate(c)">تعديل البيانات</button>
-            <button class="menu-item delete" (click)="confirmDelete(c.id)">حذف المرشح</button>
+        <div class="menu-container">
+          <button class="dots-btn" (click)="toggleMenu($event,c)">⋮</button>
+          <div class="dropdown-panel shadow-lg" *ngIf="c.showMenu">
+            <button class="menu-item" (click)="viewCandidate(c)"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+            <button class="menu-item" (click)="editCandidate(c)"><i class="fas fa-edit"></i> تعديل البيانات</button>
+            <div class="menu-divider"></div>
+            <button class="menu-item delete" (click)="confirmDelete(c.id)"><i class="fas fa-trash"></i> حذف المرشح</button>
           </div>
         </div>
       </div>
 
       <div class="card-body">
-        <h3>{{c.full_name}}</h3>
-        <div class="info-row">{{c.email}}</div>
-        <div class="info-row">{{c.phone}}</div>
-        <div class="job-tag">{{ getDisplayJobTitle(c) }}</div>
+        <h3 class="candidate-name">{{c.full_name}}</h3>
+        <div class="info-list">
+          <div class="info-item"><i class="fas fa-envelope"></i> {{c.email}}</div>
+          <div class="info-item"><i class="fas fa-phone"></i> {{c.phone}}</div>
+        </div>
+        <div class="job-tag-wrapper">
+          <span class="job-tag">{{ getDisplayJobTitle(c) }}</span>
+        </div>
       </div>
-
     </div>
   </div>
 
   <div class="modal-backdrop" *ngIf="showAddModal">
-    <div class="modal">
-
-      <div class="modal-header">
+    <div class="modal-container shadow-2xl">
+      <div class="modal-header-modern">
         <h2>{{ isViewMode ? 'تفاصيل المرشح' : 'بيانات المرشح' }}</h2>
-        <button class="close-x" (click)="closeModal()">×</button>
+        <button class="close-modal" (click)="closeModal()">×</button>
       </div>
 
       <div class="modal-body-scroll">
+        <div class="center-avatar-section">
+          <div class="avatar-upload-container">
+            <div class="image-frame">
+              <img 
+                [src]="previewUrl 
+                  ? previewUrl 
+                  : (candidateForm.get('profile_image_url')?.value 
+                      ? 'http://localhost:3000/uploads/' + candidateForm.get('profile_image_url')?.value 
+                      : 'assets/unknown.png')" 
+                class="preview-circular shadow-md"
+                (error)="handleImageError($event)">
 
-      <div class="center-avatar">
-  <div class="avatar-upload">
+              <label *ngIf="!isViewMode" class="floating-upload-btn">
+                <i class="fas fa-camera"></i>
+                <input type="file" (change)="onPhotoSelect($event)" hidden accept="image/*">
+              </label>
+            </div>
+            <div class="validation-msg center" *ngIf="isInvalid(candidateForm, 'profile_image_url')">
+               <i class="fas fa-exclamation-circle"></i> الصورة الشخصية مطلوبة
+            </div>
+            <button type="button" class="btn-remove-img" *ngIf="!isViewMode && (previewUrl || candidateForm.get('profile_image_url')?.value)" (click)="removeImage()">حذف الصورة</button>
+          </div>
+        </div>
 
-    <img 
-      [src]="previewUrl 
-        ? previewUrl 
-        : (candidateForm.get('profile_image_url')?.value 
-            ? 'http://localhost:3000/uploads/' + candidateForm.get('profile_image_url')?.value 
-            : 'assets/unknown.png')" 
-      class="preview-circular"
-      (error)="handleImageError($event)">
-
-    <label *ngIf="!isViewMode" class="upload-btn">
-      تغيير الصورة
-      <input type="file" (change)="onPhotoSelect($event)" hidden>
-    </label>
-
-    <button 
-      *ngIf="!isViewMode && (previewUrl || candidateForm.get('profile_image_url')?.value)" 
-      class="delete-img-btn"
-      (click)="removeImage()">
-      حذف الصورة
-    </button>
-
-  </div>
-</div>
-
-        <form [formGroup]="candidateForm">
+        <form [formGroup]="candidateForm" class="modern-form">
           <div class="form-grid">
-
             <div class="field full">
               <label>الاسم الرباعي الكامل</label>
-              <input type="text" formControlName="full_name">
+              <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input type="text" formControlName="full_name" [class.input-error]="isInvalid(candidateForm, 'full_name')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'full_name')">
+                <i class="fas fa-exclamation-circle"></i> يرجى إدخال الاسم الرباعي
+              </div>
             </div>
 
             <div class="field">
               <label>البريد الإلكتروني</label>
-              <input type="email" formControlName="email">
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" formControlName="email" [class.input-error]="isInvalid(candidateForm, 'email')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'email')">
+                <i class="fas fa-exclamation-circle"></i> بريد إلكتروني غير صالح
+              </div>
             </div>
 
             <div class="field">
               <label>رقم الهاتف</label>
-              <input type="text" formControlName="phone">
+              <div class="input-with-icon">
+                <i class="fas fa-phone"></i>
+                <input type="text" formControlName="phone" [class.input-error]="isInvalid(candidateForm, 'phone')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'phone')">
+                <i class="fas fa-exclamation-circle"></i> رقم الهاتف مطلوب
+              </div>
             </div>
 
             <div class="field">
               <label>مكان السكن</label>
-              <select formControlName="address">
-                <option value="">اختر المحافظة</option>
-                <option *ngFor="let g of jordanGovernorates" [value]="g">{{g}}</option>
-              </select>
+              <div class="input-with-icon">
+                <i class="fas fa-map-marker-alt"></i>
+                <select formControlName="address" [class.input-error]="isInvalid(candidateForm, 'address')">
+                  <option value="">اختر المحافظة</option>
+                  <option *ngFor="let g of jordanGovernorates" [value]="g">{{g}}</option>
+                </select>
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'address')">
+                <i class="fas fa-exclamation-circle"></i> يرجى اختيار العنوان
+              </div>
             </div>
 
             <div class="field">
               <label>التخصص الجامعي</label>
-              <input type="text" formControlName="university_major">
+              <div class="input-with-icon">
+                <i class="fas fa-graduation-cap"></i>
+                <input type="text" formControlName="university_major" [class.input-error]="isInvalid(candidateForm, 'university_major')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'university_major')">
+                <i class="fas fa-exclamation-circle"></i> التخصص مطلوب
+              </div>
             </div>
 
             <div class="field">
               <label>سنة التخرج</label>
-              <input type="number" formControlName="graduation_year">
+              <div class="input-with-icon">
+                <i class="fas fa-calendar"></i>
+                <input type="number" formControlName="graduation_year" [class.input-error]="isInvalid(candidateForm, 'graduation_year')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'graduation_year')">
+                <i class="fas fa-exclamation-circle"></i> مطلوب
+              </div>
             </div>
 
             <div class="field full">
-              <label>الوظيفة</label>
-              <select formControlName="job_id" (change)="onJobSelect($event)">
-                <option [value]="null">اختر</option>
-                <option *ngFor="let j of jobs" [value]="j.id">{{j.job_title}}</option>
-                <option value="other">أخرى</option>
-              </select>
-
-              <input *ngIf="isCustomJob" formControlName="custom_job" placeholder="وظيفة أخرى">
+              <label>المسمى الوظيفي المطلوب</label>
+              <div class="input-with-icon">
+                <i class="fas fa-briefcase"></i>
+                <select formControlName="job_id" (change)="onJobSelect($event)" [class.input-error]="isInvalid(candidateForm, 'job_id')">
+                  <option [value]="null">اختر الوظيفة</option>
+                  <option *ngFor="let j of jobs" [value]="j.id">{{j.job_title}}</option>
+                  <option value="other">أخرى (مسمى مخصص)</option>
+                </select>
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'job_id')">
+                <i class="fas fa-exclamation-circle"></i> يرجى تحديد الوظيفة
+              </div>
+              <input *ngIf="isCustomJob" formControlName="custom_job" placeholder="اكتب المسمى الوظيفي هنا" class="mt-2">
             </div>
 
             <div class="field full">
-              <label>
-                <input type="checkbox" formControlName="has_experience">
-                لديه خبرة
-              </label>
+              <div class="experience-box" [class.active]="candidateForm.get('has_experience')?.value">
+                <label class="custom-check">
+                  <input type="checkbox" formControlName="has_experience">
+                  <span>هل يوجد خبرة سابقة في هذا المجال؟</span>
+                </label>
 
-              <div *ngIf="candidateForm.get('has_experience')?.value" class="form-grid mt-8">
-                <div class="field">
-                  <label>المسمى</label>
-                  <input type="text" formControlName="exp_position">
-                </div>
-
-                <div class="field">
-                  <label>الشركة</label>
-                  <input type="text" formControlName="exp_company_name">
-                </div>
-
-                <div class="field full">
-                  <label>المدة</label>
-                  <input type="text" formControlName="exp_period">
+                <div *ngIf="candidateForm.get('has_experience')?.value" class="form-grid mt-4 fade-in">
+                  <div class="field"><label>المسمى الوظيفي السابق</label><input type="text" formControlName="exp_position"></div>
+                  <div class="field"><label>اسم الشركة</label><input type="text" formControlName="exp_company_name"></div>
+                  <div class="field full"><label>مدة الخبرة</label><input type="text" formControlName="exp_period" placeholder="مثال: سنتين"></div>
                 </div>
               </div>
             </div>
 
             <div class="field full">
-              <label>CV</label>
-              <input type="file" (change)="onFileSelect($event)">
+              <label>السيرة الذاتية (PDF)</label>
+              <div class="input-with-icon">
+                <i class="fas fa-file-pdf"></i>
+                <input type="file" (change)="onFileSelect($event)" accept=".pdf" [class.input-error]="isInvalid(candidateForm, 'cv_url')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'cv_url')">
+                <i class="fas fa-exclamation-circle"></i> ملف السيرة الذاتية مطلوب
+              </div>
             </div>
-
           </div>
         </form>
-
       </div>
 
-      <button class="btn-primary-save" (click)="submitCandidate()" *ngIf="!isViewMode">
-        حفظ
-      </button>
-
+      <div class="modal-footer-modern">
+        <button class="btn-cancel" (click)="closeModal()">إلغاء</button>
+        <button class="btn-save shadow-md" (click)="submitCandidate()" *ngIf="!isViewMode">
+          <i class="fas fa-check"></i> حفظ بيانات المرشح
+        </button>
+      </div>
     </div>
   </div>
-
 </div>

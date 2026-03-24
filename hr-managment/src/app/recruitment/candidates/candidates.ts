@@ -45,14 +45,14 @@ export class Candidates implements OnInit {
       address: ['', Validators.required],
       university_major: ['', Validators.required],
       graduation_year: ['', [Validators.required]],
-      job_id: [null],
+      job_id: [null, Validators.required],
       custom_job: [''],
       has_experience: [false],
       exp_company_name: [''],
       exp_position: [''],
       exp_period: [''],
-      cv_url: [''],
-      profile_image_url: [''],
+      cv_url: ['', Validators.required],
+      profile_image_url: ['', Validators.required],
       current_stage: [null]
     });
   }
@@ -79,6 +79,11 @@ export class Candidates implements OnInit {
     if (c.custom_job) return c.custom_job;
     const job = this.jobs.find(j => j.id == c.job_id);
     return job ? job.job_title : (c.job_title || 'لم يحدد');
+  }
+
+  isInvalid(form: FormGroup, controlName: string): boolean {
+    const control = form.get(controlName);
+    return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
   openAddModal() {
@@ -112,16 +117,16 @@ export class Candidates implements OnInit {
       this.candidateForm.markAllAsTouched();
       return;
     }
-
     const formData = new FormData();
     const formValues = this.candidateForm.getRawValue();
-
+    if (formValues.job_id === 'other') {
+      formValues.job_id = null;
+    }
     Object.keys(formValues).forEach(key => {
       if (formValues[key] !== null && formValues[key] !== undefined) {
         formData.append(key, formValues[key]);
       }
     });
-
     if (this.selectedCv) formData.append('cvFile', this.selectedCv);
     if (this.selectedPhoto) formData.append('photoFile', this.selectedPhoto);
     if (this.photoWasRemoved && !this.selectedPhoto) formData.append('removePhoto', 'true');
@@ -131,9 +136,14 @@ export class Candidates implements OnInit {
       ? this.candidateService.updateCandidate(id, formData) 
       : this.candidateService.addCandidate(formData);
 
-    request.subscribe(() => {
-      this.closeModal();
-      this.loadInitialData();
+    request.subscribe({
+      next: () => {
+        this.closeModal();
+        this.loadInitialData();
+      },
+      error: (err) => {
+        console.error(err);
+      }
     });
   }
 
@@ -150,6 +160,7 @@ export class Candidates implements OnInit {
     if (file) {
       this.selectedPhoto = file;
       this.photoWasRemoved = false;
+      this.candidateForm.patchValue({ profile_image_url: file.name });
       const reader = new FileReader();
       reader.onload = () => {
         this.previewUrl = reader.result as string;
@@ -184,6 +195,11 @@ export class Candidates implements OnInit {
 
   handleImageError(event: any) { event.target.src = 'assets/unknown.png'; }
   onJobSelect(event: any) { this.isCustomJob = event.target.value === 'other'; }
-  onFileSelect(event: any) { if (event.target.files.length > 0) this.selectedCv = event.target.files[0]; }
-  confirmDelete(id: number) { if (confirm('حذف؟')) this.candidateService.deleteCandidate(id).subscribe(() => this.loadCandidates()); }
+  onFileSelect(event: any) { 
+    if (event.target.files.length > 0) {
+      this.selectedCv = event.target.files[0];
+      this.candidateForm.patchValue({ cv_url: this.selectedCv?.name });
+    }
+  }
+  confirmDelete(id: number) { if (confirm('هل أنت متأكد من الحذف؟')) this.candidateService.deleteCandidate(id).subscribe(() => this.loadCandidates()); }
 }

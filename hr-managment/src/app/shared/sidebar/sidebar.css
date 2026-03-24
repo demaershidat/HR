@@ -93,36 +93,11 @@
   padding: 5px 0 !important;
 }
 
-.submenu li {
-  margin-bottom: 2px !important;
-}
-
 .submenu li a {
   padding: 10px 15px !important;
   font-size: 13px !important;
   color: #a0a0a0 !important;
   border-right: none !important;
-}
-
-.active-sub {
-  color: #fff !important;
-  font-weight: bold;
-}
-
-.app-sidebar ul li a:hover {
-  background-color: #222;
-  color: #fff;
-}
-
-.app-sidebar ul li a i {
-  font-size: 18px;
-  width: 25px;
-  text-align: center;
-}
-
-.app-sidebar ul li a span {
-  font-size: 15px;
-  white-space: nowrap;
 }
 
 .active-link {
@@ -131,32 +106,80 @@
   border-right: 4px solid #007bff !important;
 }
 
+.app-sidebar ul li a i {
+  font-size: 18px;
+  width: 25px;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .app-sidebar {
     width: 70px;
     padding: 20px 5px;
+    overflow: visible; 
   }
 
   .brand-name, 
-  .app-sidebar ul li a span,
-  .arrow,
-  .submenu {
+  .app-sidebar ul li a span, 
+  .arrow {
     display: none !important;
   }
 
   .sidebar-header {
     gap: 0;
     justify-content: center;
+    padding-bottom: 15px;
   }
 
-  .app-sidebar ul li a {
+  .app-sidebar ul li a, 
+  .parent-link {
+    justify-content: center !important;
+    padding: 12px 0 !important;
+    gap: 0 !important;
+    border-right: 4px solid transparent !important;
+  }
+
+  .link-main {
+    display: flex;
     justify-content: center;
-    padding: 12px 0;
-    gap: 0;
+    align-items: center;
+    width: 100%;
+    gap: 0 !important;
   }
 
   .app-sidebar ul li a i {
-    font-size: 20px;
-    width: auto;
+    font-size: 20px !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+
+  .has-submenu {
+    position: relative;
+  }
+
+  .submenu.show {
+    display: block !important;
+    position: absolute;
+    right: 65px; 
+    top: 0;
+    width: 190px;
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 8px 0 0 8px;
+    max-height: none !important;
+    padding: 8px !important;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
+    z-index: 9999;
+  }
+
+  .submenu li a {
+    text-align: right !important;
+    padding: 10px 15px !important;
+    justify-content: flex-start !important;
+  }
+
+  .content-wrapper:not(.no-sidebar) {
+    margin-right: 70px !important;
   }
 }

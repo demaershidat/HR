@@ -1,164 +1,210 @@
-<div class="admin-layout">
+<div class="admin-layout" dir="rtl">
   <header class="main-header">
     <div class="header-info">
       <h1>إدارة الوظائف</h1>
       <p>إدارة وتنظيم الوظائف لشركة Solid Soft</p>
     </div>
     <div class="header-actions">
-      <button class="btn-delete-selected" *ngIf="selectedJobIds.length > 0" (click)="deleteSelected()">حذف المحدد</button>
-      <button class="btn-add-job" (click)="openModal()">إضافة وظيفة</button>
+      <button class="btn-delete-selected shadow-sm" *ngIf="selectedJobIds.length > 0" (click)="deleteSelected()">
+        <i class="fas fa-trash-alt"></i> حذف المحدد
+      </button>
+      <button class="btn-add-job shadow-sm" (click)="openModal()">
+        <i class="fas fa-plus"></i>وظيفة</button>
     </div>
   </header>
 
   <section class="table-card">
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th width="40"></th>
-          <th>الوظيفة</th>
-          <th>الشركة</th>
-          <th>تاريخ النشر</th>
-          <th>الحالة</th>
-          <th>العمليات</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let job of jobs">
-          <td><input type="checkbox" (change)="toggleSelection(job.id)" [checked]="selectedJobIds.includes(job.id)"></td>
-          <td>{{ job.job_title }}</td>
-          <td>{{ job.company_name }}</td>
-          <td>{{ job.publish_date | date:'dd/MM/yyyy' }}</td>
-          <td>
-            <span *ngIf="isJobActive(job)" class="status-active">نشطة</span>
-            <span *ngIf="!isJobActive(job)" class="status-expired">منتهية</span>
-          </td>
-          <td>
-            <button class="btn-apply" (click)="openApplyModal(job)">التقدم للوظيفة</button>
-            <button class="btn-edit" (click)="editJob(job)">تعديل</button>
-            <button class="btn-delete" (click)="onDeleteJob(job.id)">حذف</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div *ngIf="jobs.length === 0" class="empty-state">لا توجد وظائف</div>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th width="50"></th>
+            <th>الوظيفة</th>
+            <th>الشركة</th>
+            <th>تاريخ النشر</th>
+            <th>الحالة</th>
+            <th class="text-center">العمليات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let job of jobs" [class.selected-row]="selectedJobIds.includes(job.id)">
+            <td>
+              <label class="checkbox-container">
+                <input type="checkbox" (change)="toggleSelection(job.id)" [checked]="selectedJobIds.includes(job.id)">
+                <span class="checkmark"></span>
+              </label>
+            </td>
+            <td data-label="الوظيفة"><span class="job-title-text">{{ job.job_title }}</span></td>
+            <td data-label="الشركة">{{ job.company_name }}</td>
+            <td data-label="تاريخ النشر"><span class="date-badge">{{ job.publish_date | date:'dd/MM/yyyy' }}</span></td>
+            <td data-label="الحالة">
+              <span [class]="isJobActive(job) ? 'status-active' : 'status-expired'">
+                {{ isJobActive(job) ? 'نشطة' : 'منتهية' }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="actions-wrapper">
+                <button class="btn-apply-action" (click)="openApplyModal(job)" title="تقدم"><i class="fas fa-paper-plane"></i></button>
+                <button class="btn-edit-action" (click)="editJob(job)" title="تعديل"><i class="fas fa-edit"></i></button>
+                <button class="btn-delete-action" (click)="onDeleteJob(job.id)" title="حذف"><i class="fas fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="jobs.length === 0" class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <p>لا توجد وظائف معروضة حالياً</p>
+    </div>
   </section>
 
-  <div class="modal-overlay" *ngIf="isModalOpen">
-    <div class="modal-container">
-      <div class="modal-header"><h3>{{ currentEditId ? 'تعديل وظيفة' : 'إضافة وظيفة' }}</h3></div>
-      <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="modal-form">
-        <div class="form-grid">
-          <div class="field full">
-            <label>المسمى الوظيفي</label>
-            <input type="text" formControlName="title" [class.input-error]="isInvalid(jobForm, 'title')">
-            <small class="error-text" *ngIf="isInvalid(jobForm, 'title')">{{getErrorMessage(jobForm, 'title')}}</small>
-          </div>
-          <div class="field">
-            <label>اسم الشركة</label>
-            <input type="text" formControlName="companyName" [class.input-error]="isInvalid(jobForm, 'companyName')">
-            <small class="error-text" *ngIf="isInvalid(jobForm, 'companyName')">{{getErrorMessage(jobForm, 'companyName')}}</small>
-          </div>
-          <div class="field full">
-            <label>الوصف</label>
-            <textarea rows="3" formControlName="description" [class.input-error]="isInvalid(jobForm, 'description')"></textarea>
-            <small class="error-text" *ngIf="isInvalid(jobForm, 'description')">{{getErrorMessage(jobForm, 'description')}}</small>
-          </div>
-          <div class="field">
-            <label>تاريخ النشر</label>
-            <input type="date" formControlName="publishDate">
-          </div>
-          <div class="field">
-            <label>تاريخ الانتهاء</label>
-            <input type="date" formControlName="expiryDate" [class.input-error]="isInvalid(jobForm, 'expiryDate')">
-            <small class="error-text" *ngIf="isInvalid(jobForm, 'expiryDate')">{{getErrorMessage(jobForm, 'expiryDate')}}</small>
-          </div>
-          <div class="field full checkbox-group">
-            <label class="custom-checkbox"><input type="checkbox" formControlName="allowProfileImage"><span>طلب صورة شخصية</span></label>
-            <label class="custom-checkbox"><input type="checkbox" formControlName="allowResume"><span>طلب سيرة ذاتية</span></label>
-          </div>
-        </div>
-        <div class="form-footer">
-          <button type="submit" class="btn-save">حفظ</button>
-          <button type="button" class="btn-cancel" (click)="closeModal()">إلغاء</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <div class="modal-overlay" *ngIf="isModalOpen || isApplyModalOpen">
+    <div class="modal-container" [ngClass]="{'apply-modal': isApplyModalOpen}">
+      <div class="modal-header">
+        <h3>
+          <ng-container *ngIf="isModalOpen">{{ currentEditId ? 'تعديل وظيفة' : 'إضافة وظيفة جديدة' }}</ng-container>
+          <ng-container *ngIf="isApplyModalOpen">التقدم لوظيفة: {{selectedJob?.job_title}}</ng-container>
+        </h3>
+        <button class="close-btn" (click)="isModalOpen ? closeModal() : closeApplyModal()">×</button>
+      </div>
 
-  <div class="modal-overlay" *ngIf="isApplyModalOpen">
-    <div class="modal-container apply-modal">
-      <div class="modal-header"><h3>التقدم لوظيفة: {{selectedJob?.job_title}}</h3></div>
       <div class="modal-body-scroll">
-        <form [formGroup]="applyForm" (ngSubmit)="onApplySubmit()" class="form-grid">
-          
-          <div class="field full image-upload-section">
-            <label>الصورة الشخصية</label>
-            <div class="preview-wrapper">
-              <img [src]="previewUrl ? previewUrl : 'assets/unkown.png'" 
-                   class="apply-preview-img" (error)="handleImageError($event)">
-              <button type="button" class="btn-remove-photo" *ngIf="previewUrl" (click)="removePhoto()">×</button>
+        <form *ngIf="isModalOpen" [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="modal-form">
+          <div class="form-grid">
+            <div class="field full">
+              <label>المسمى الوظيفي</label>
+              <input type="text" formControlName="title" placeholder="مثال: مبرمج Angular" [class.input-error]="isInvalid(jobForm, 'title')">
+              <div class="validation-msg" *ngIf="isInvalid(jobForm, 'title')">
+                <i class="fas fa-exclamation-circle"></i> {{getErrorMessage(jobForm, 'title')}}
+              </div>
             </div>
-            <input type="file" *ngIf="selectedJob?.require_profile_image" (change)="onFileChange($event,'photo')" accept="image/*" 
-                   [class.input-error]="isInvalid(applyForm, 'photoFile')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'photoFile')">يرجى إرفاق الصورة الشخصية (مطلوبة لهذه الوظيفة)</small>
+            
+            <div class="field">
+              <label>اسم الشركة</label>
+              <input type="text" formControlName="companyName" placeholder="اسم الشركة" [class.input-error]="isInvalid(jobForm, 'companyName')">
+              <div class="validation-msg" *ngIf="isInvalid(jobForm, 'companyName')">
+                <i class="fas fa-exclamation-circle"></i> حقل مطلوب
+              </div>
+            </div>
+
+            <div class="field">
+              <label>تاريخ الانتهاء</label>
+              <input type="date" formControlName="expiryDate" [class.input-error]="isInvalid(jobForm, 'expiryDate')">
+              <div class="validation-msg" *ngIf="isInvalid(jobForm, 'expiryDate')">
+                <i class="fas fa-exclamation-circle"></i> يرجى تحديد التاريخ
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>وصف الوظيفة</label>
+              <textarea rows="4" formControlName="description" placeholder="اكتب وصفاً مختصراً للمتطلبات والمهام..." [class.input-error]="isInvalid(jobForm, 'description')"></textarea>
+              <div class="validation-msg" *ngIf="isInvalid(jobForm, 'description')">
+                <i class="fas fa-exclamation-circle"></i> يرجى كتابة وصف الوظيفة
+              </div>
+            </div>
+
+            <div class="field full checkbox-group-modern">
+              <label class="custom-check"><input type="checkbox" formControlName="allowProfileImage"><span>طلب صورة شخصية</span></label>
+              <label class="custom-check"><input type="checkbox" formControlName="allowResume"><span>طلب سيرة ذاتية</span></label>
+            </div>
+          </div>
+          <div class="form-footer">
+            <button type="submit" class="btn-save-main">حفظ البيانات</button>
+            <button type="button" class="btn-cancel-main" (click)="closeModal()">إلغاء</button>
+          </div>
+        </form>
+
+        <form *ngIf="isApplyModalOpen" [formGroup]="applyForm" (ngSubmit)="onApplySubmit()" class="modal-form">
+          <div class="form-grid">
+            <div class="field full image-upload-center">
+              <div class="preview-wrapper">
+                <img [src]="previewUrl ? previewUrl : 'assets/unkown.png'" class="apply-preview-img shadow-sm" (error)="handleImageError($event)">
+                <button type="button" class="btn-remove-photo" *ngIf="previewUrl" (click)="removePhoto()">×</button>
+              </div>
+              <input type="file" *ngIf="selectedJob?.require_profile_image" (change)="onFileChange($event,'photo')" accept="image/*" [class.input-error]="isInvalid(applyForm, 'photoFile')">
+              <div class="validation-msg center" *ngIf="isInvalid(applyForm, 'photoFile')">
+                <i class="fas fa-camera"></i> الصورة الشخصية مطلوبة لهذه الوظيفة
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>الاسم الرباعي</label>
+              <input type="text" formControlName="fullName" placeholder="أدخل اسمك الكامل" [class.input-error]="isInvalid(applyForm, 'fullName')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'fullName')">
+                <i class="fas fa-exclamation-circle"></i> الاسم مطلوب بشكل كامل
+              </div>
+            </div>
+
+            <div class="field">
+              <label>البريد الإلكتروني</label>
+              <input type="email" formControlName="email" placeholder="example@mail.com" [class.input-error]="isInvalid(applyForm, 'email')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'email')">
+                <i class="fas fa-envelope"></i> بريد إلكتروني غير صالح
+              </div>
+            </div>
+
+            <div class="field">
+              <label>رقم الهاتف</label>
+              <input type="text" formControlName="phone" placeholder="07xxxxxxxx" [class.input-error]="isInvalid(applyForm, 'phone')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'phone')">
+                <i class="fas fa-phone"></i> رقم الهاتف مطلوب
+              </div>
+            </div>
+
+            <div class="field">
+              <label>تخصص الجامعة</label>
+              <input type="text" formControlName="major" [class.input-error]="isInvalid(applyForm, 'major')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'major')">
+                <i class="fas fa-graduation-cap"></i> التخصص مطلوب
+              </div>
+            </div>
+
+            <div class="field">
+              <label>سنة التخرج</label>
+              <input type="number" formControlName="graduationYear" [class.input-error]="isInvalid(applyForm, 'graduationYear')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'graduationYear')">
+                <i class="fas fa-calendar"></i> حدد السنة
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>مكان السكن</label>
+              <select formControlName="address" [class.input-error]="isInvalid(applyForm, 'address')">
+                <option value="">اختر المحافظة</option>
+                <option *ngFor="let gov of jordanGovernorates">{{gov}}</option>
+              </select>
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'address')">
+                <i class="fas fa-map-marker-alt"></i> يرجى اختيار العنوان
+              </div>
+            </div>
+
+            <div class="field full" *ngIf="selectedJob?.require_cv">
+              <label>إرفاق السيرة الذاتية (PDF)</label>
+              <div class="file-input-wrapper">
+                <input type="file" (change)="onFileChange($event,'cv')" accept=".pdf,.doc,.docx" [class.input-error]="isInvalid(applyForm, 'cvFile')">
+              </div>
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'cvFile')">
+                <i class="fas fa-file-pdf"></i> يجب إرفاق ملف السيرة الذاتية
+              </div>
+            </div>
+
+            <div class="field full experience-toggle">
+              <label class="custom-check"><input type="checkbox" formControlName="hasExperience"><span>هل لديك خبرة سابقة؟</span></label>
+            </div>
+            
+            <div class="experience-details full fade-in" *ngIf="applyForm.get('hasExperience')?.value">
+              <div class="form-grid">
+                <div class="field"><label>اسم الشركة</label><input type="text" formControlName="expCompany"></div>
+                <div class="field"><label>المسمى الوظيفي</label><input type="text" formControlName="expPosition"></div>
+                <div class="field full"><label>مدة الخبرة</label><input type="text" formControlName="expPeriod"></div>
+              </div>
+            </div>
           </div>
 
-          <div class="field full">
-            <label>الاسم الرباعي</label>
-            <input type="text" formControlName="fullName" [class.input-error]="isInvalid(applyForm, 'fullName')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'fullName')">{{getErrorMessage(applyForm, 'fullName')}}</small>
-          </div>
-
-          <div class="field">
-            <label>البريد الإلكتروني</label>
-            <input type="email" formControlName="email" [class.input-error]="isInvalid(applyForm, 'email')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'email')">{{getErrorMessage(applyForm, 'email')}}</small>
-          </div>
-
-          <div class="field">
-            <label>رقم الهاتف</label>
-            <input type="text" formControlName="phone" [class.input-error]="isInvalid(applyForm, 'phone')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'phone')">{{getErrorMessage(applyForm, 'phone')}}</small>
-          </div>
-
-          <div class="field">
-            <label>تخصص الجامعة</label>
-            <input type="text" formControlName="major" [class.input-error]="isInvalid(applyForm, 'major')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'major')">{{getErrorMessage(applyForm, 'major')}}</small>
-          </div>
-
-          <div class="field">
-            <label>سنة التخرج</label>
-            <input type="number" formControlName="graduationYear" [class.input-error]="isInvalid(applyForm, 'graduationYear')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'graduationYear')">{{getErrorMessage(applyForm, 'graduationYear')}}</small>
-          </div>
-
-          <div class="field">
-            <label>مكان السكن</label>
-            <select formControlName="address" [class.input-error]="isInvalid(applyForm, 'address')">
-              <option value="">اختر المحافظة</option>
-              <option *ngFor="let gov of jordanGovernorates">{{gov}}</option>
-            </select>
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'address')">{{getErrorMessage(applyForm, 'address')}}</small>
-          </div>
-
-          <div class="field full" *ngIf="selectedJob?.require_cv">
-            <label>إرفاق السيرة الذاتية</label>
-            <input type="file" (change)="onFileChange($event,'cv')" accept=".pdf,.doc,.docx" [class.input-error]="isInvalid(applyForm, 'cvFile')">
-            <small class="error-text" *ngIf="isInvalid(applyForm, 'cvFile')">يرجى إرفاق ملف السيرة الذاتية (مطلوب)</small>
-          </div>
-
-          <div class="field full"><label class="custom-checkbox"><input type="checkbox" formControlName="hasExperience"><span>هل لديك خبرة سابقة؟</span></label></div>
-          
-          <div class="experience-details full" *ngIf="applyForm.get('hasExperience')?.value">
-            <div class="field"><label>اسم الشركة</label><input type="text" formControlName="expCompany"></div>
-            <div class="field"><label>المسمى الوظيفي</label><input type="text" formControlName="expPosition"></div>
-            <div class="field full"><label>مدة الخبرة</label><input type="text" formControlName="expPeriod"></div>
-          </div>
-
-          <div class="form-footer full">
-            <button type="submit" class="btn-save">إرسال الطلب</button>
-            <button type="button" class="btn-cancel" (click)="closeApplyModal()">إلغاء</button>
+          <div class="form-footer">
+            <button type="submit" class="btn-save-main">إرسال الطلب</button>
+            <button type="button" class="btn-cancel-main" (click)="closeApplyModal()">إلغاء</button>
           </div>
         </form>
       </div>

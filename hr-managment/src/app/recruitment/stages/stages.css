@@ -1,178 +1,201 @@
 :host {
   display: block;
-  background: #ffffff;
+  --primary: #7022ba;
+  --primary-dark: #5a1a99;
+  --primary-light: #f3ebff;
+  --bg-main: #f8fafc; 
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #f1f5f9;
+  --star-filled: #f59e0b;
+  --star-empty: #e2e8f0;
+  --shadow-card: 0 4px 20px -2px rgba(112, 34, 186, 0.05);
+  --shadow-hover: 0 20px 25px -5px rgba(112, 34, 186, 0.1);
+  
+  background-color: var(--bg-main);
   min-height: 100vh;
   direction: rtl;
-  font-family: "Segoe UI", Tahoma;
-  color: #222;
+  font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
 .admin-layout {
-  padding: 40px;
-  max-width: 1200px;
+  padding: clamp(20px, 4vw, 50px);
+  max-width: 1400px;
   margin: auto;
 }
 
 .main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 40px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 25px;
+}
+
+.title-group h1 {
+  color: var(--text-main);
+  font-weight: 850;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
 }
 
 .modern-select {
-  padding: 11px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 14px;
-  min-width: 250px;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-color);
+  padding: 10px 18px;
+  border-radius: 14px;
+  color: var(--text-main);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.modern-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-light);
   outline: none;
 }
 
-.stages-vertical-list {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
 .stage-row-container {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,.03);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  border-radius: 24px;
+  margin-bottom: 35px;
+  transition: transform 0.3s ease;
 }
 
 .stage-row-header {
-  background: #fafafa;
-  padding: 15px 25px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 22px 30px;
+  background: linear-gradient(to left, #fcfaff, #ffffff);
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 24px 24px 0 0;
 }
 
-.stage-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.stage-info h3 {
+  color: var(--text-main);
+  font-weight: 800;
+  font-size: 1.1rem;
 }
 
 .stage-dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
-}
-
-.stage-info h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #111;
+  border-radius: 4px; 
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .status-active {
-  background: #111;
-  color: #fff;
-  padding: 5px 15px;
-  border-radius: 20px;
+  background: var(--primary);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 100px;
   font-size: 12px;
-  font-weight: 600;
-}
-
-.candidates-horizontal-scroll {
-  padding: 20px;
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  min-height: 120px;
-  align-items: center;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(112, 34, 186, 0.2);
 }
 
 .mini-candidate-card {
-  min-width: 280px;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 15px;
-  transition: .2s;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .mini-candidate-card:hover {
-  border-color: #111;
-  box-shadow: 0 5px 15px rgba(0,0,0,.05);
-}
-
-.card-content {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+  border-color: var(--primary-light);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-8px) scale(1.02);
 }
 
 .candidate-avatar {
-  width: 55px;
-  height: 55px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 1px solid #eee;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  width: 65px;
+  height: 65px;
+  border-radius: 18px; 
 }
 
 .candidate-details h4 {
-  margin: 0;
-  font-size: 14px;
-  color: #111;
+  color: var(--text-main);
+  font-weight: 800;
+  font-size: 1rem;
 }
 
 .job-tag-text {
-  font-size: 12px;
-  color: #777;
-  display: block;
-  margin-top: 3px;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .rating-stars {
-  margin-top: 8px;
-  color: #ddd;
-  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  gap: 4px;
 }
 
 .rating-stars span {
-  font-size: 18px;
-  margin-left: 2px;
+  color: var(--star-empty);
+  font-size: 16px;
+  transition: transform 0.2s ease;
 }
 
 .rating-stars span.filled {
-  color: #111; 
+  color: var(--star-filled);
+  filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.3));
 }
 
 .card-footer-actions {
+  border-top: 1px solid var(--border-color);
+  padding-top: 15px;
   margin-top: 15px;
-  padding-top: 12px;
-  border-top: 1px dashed #eee;
 }
 
 .stage-dropdown {
-  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid transparent;
   padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #eee;
   font-size: 12px;
-  background: #fdfdfd;
-  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: 12px;
+  transition: 0.3s;
 }
 
-.empty-state-small {
-  color: #aaa;
-  font-size: 13px;
-  padding: 20px;
-  width: 100%;
-  text-align: center;
+.stage-dropdown:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Scrollbar */
+.candidates-horizontal-scroll {
+  padding: 25px 30px;
+  gap: 25px;
 }
 
 .candidates-horizontal-scroll::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
+
 .candidates-horizontal-scroll::-webkit-scrollbar-thumb {
-  background: #eee;
-  border-radius: 10px;
+  background: var(--star-empty);
+  border-radius: 20px;
+  border: 2px solid var(--bg-card);
+}
+
+.candidates-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+.empty-state-small {
+  padding: 20px;
+  background: #fcfcfc;
+  border-radius: 15px;
+  border: 1px dashed var(--border-color);
+  text-align: center;
+  width: 100%;
 }

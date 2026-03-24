@@ -1,46 +1,41 @@
-<div class="login-wrapper">
-  <div class="login-card">
-    <h2>
-      Welcome To <br>
-      <span>Solid Soft HR Management</span>
-    </h2>
+<div class="page-container">
+  <div class="splash-container" [class.fade-out-bg]="!isSplashing">
+    <img src="assets/solidSoft.png" class="zoom-logo" alt="Solid Soft">
+  </div>
 
-    <p class="subtitle">Sign in to continue</p>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="card-header">
+        <h2>Welcome To</h2>
+        <h1 class="brand-name">SOLID SOFT</h1>
+        <p class="subtitle">HR Management System</p>
+      </div>
 
-    <div *ngIf="errorMessage" class="error-message">
-      <p>{{ errorMessage }}</p>
+      <div *ngIf="errorMessage" class="error-box shake-animation">
+        <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="input-field">
+          <label>البريد الإلكتروني</label>
+          <div class="input-wrapper" [class.error-border]="emailInvalid">
+            <input type="email" placeholder="example@domain.com" formControlName="email">
+          </div>
+          <span class="hint-text" *ngIf="emailInvalid">يرجى إدخال بريد إلكتروني صحيح</span>
+        </div>
+
+        <div class="input-field">
+          <label>كلمة المرور</label>
+          <div class="input-wrapper" [class.error-border]="passwordInvalid">
+            <input type="password" placeholder="••••••••" formControlName="password">
+          </div>
+          <span class="hint-text" *ngIf="passwordInvalid">كلمة المرور مطلوبة</span>
+        </div>
+
+        <button type="submit" [disabled]="loginForm.invalid" class="submit-btn">
+          <span>تسجيل الدخول</span>
+        </button>
+      </form>
     </div>
-
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="input-group">
-        <label for="email">البريد الإلكتروني</label>
-        <input 
-          type="email"
-          id="email"
-          placeholder="Email"
-          formControlName="email"
-          [class.invalid]="loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched">
-      </div>
-      <div *ngIf="loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched" class="error-message">
-        البريد الإلكتروني مطلوب ويجب أن يكون صحيحًا.
-      </div>
-
-      <div class="input-group">
-        <label for="password">كلمة المرور</label>
-        <input 
-          type="password"
-          id="password"
-          placeholder="Password"
-          formControlName="password"
-          [class.invalid]="loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched">
-      </div>
-      <div *ngIf="loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched" class="error-message">
-        كلمة المرور مطلوبة.
-      </div>
-
-      <button type="submit" [disabled]="loginForm.invalid">
-        تسجيل الدخول
-      </button>
-    </form>
   </div>
 </div>

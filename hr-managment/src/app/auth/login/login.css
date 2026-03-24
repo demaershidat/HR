@@ -1,91 +1,171 @@
+.page-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.splash-container {
+  position: fixed;
+  inset: 0;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  pointer-events: none;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s;
+}
+
+.fade-out-bg {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.zoom-logo {
+  width: 280px;
+  height: auto;
+  opacity: 0;
+  transform: scale(0.3);
+  animation: ultraZoom 3.5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+@keyframes ultraZoom {
+  0% { transform: scale(0.3); opacity: 0; filter: blur(10px); }
+  20% { opacity: 1; filter: blur(0); }
+  75% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+
 .login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #fff; 
+  width: 100%;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
 }
 
 .login-card {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  text-align: center;
-  border: 2px solid #000;
+  background: rgba(18, 18, 18, 0.9);
+  backdrop-filter: blur(15px);
+  padding: 50px 40px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 420px;
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  box-shadow: 0 20px 50px rgba(255, 255, 255, 0.8);
 }
 
-h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #000;
+.card-header h2 {
+  color: #ffffff;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0;
 }
 
-span {
-  font-weight: bold;
-  color: #000;
+.brand-name {
+  color: #8a2be2;
+  font-size: 38px;
+  font-weight: 900;
+  margin: 5px 0;
+  text-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
 }
 
 .subtitle {
-  font-size: 14px;
-  margin-bottom: 20px;
-  color: #000;
+  color: #f4f2f2;
+  font-size: 13px;
+  margin-bottom: 35px;
 }
 
-.input-group {
-  margin-bottom: 20px;
-  text-align: left;
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-input {
+.input-field {
+  text-align: right;
+}
+
+.input-field label {
+  color: #fffefe;
+  font-size: 13px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.input-wrapper input {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-top: 8px;
-  border: 2px solid #ddd;
-  border-radius: 5px;
-  box-sizing: border-box;
+  padding: 14px;
+  background: #050505;
+  border: 1px solid #222;
+  border-radius: 12px;
+  color: #fff;
+  text-align: right;
+  transition: 0.3s;
 }
 
-input.invalid {
-  border-color: red; 
+.input-wrapper input:focus {
+  outline: none;
+  border-color: #8a2be2;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
 }
 
-button {
+.error-border input {
+  border-color: #ff4d4d !important;
+}
+
+.hint-text {
+  color: #ff4d4d;
+  font-size: 11px;
+  margin-top: 5px;
+  display: block;
+}
+
+.submit-btn {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  background-color: #000; 
-  color: white;
+  padding: 16px;
+  background: #8a2be2;
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: 0.3s;
+  margin-top: 10px;
 }
 
-button:disabled {
-  background-color: #ccc;
+.submit-btn:hover:enabled {
+  background: #9d42f5;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
 }
 
-button:hover:enabled {
-  background-color: #333;
+.submit-btn:disabled {
+  background: #222;
+  color: #444;
 }
 
-.success-message {
-  background-color: green;
-  color: white;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 5px;
+.error-box {
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 77, 77, 0.2);
   margin-bottom: 20px;
+  text-align: center;
+  font-size: 13px;
 }
 
-.error-message {
-  background-color: red;
-  color: white;
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 5px;
-  margin-bottom: 20px;
+.shake-animation {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }

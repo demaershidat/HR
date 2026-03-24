@@ -1,332 +1,248 @@
+:host {
+  --primary: #8a2be2;
+  --primary-dark: #7022ba;
+  --primary-light: #f3ebff;
+  --bg-subtle: #f8fafc;
+  --white: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+
 .candidates-container {
   padding: 30px;
-  background: #fcfcfd;
+  background: var(--bg-subtle);
   min-height: 100vh;
   direction: rtl;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-.title-group h1 { font-size: 28px; color: #111; font-weight: 800; margin: 0; }
-.btn-add { background: #000; color: #fff; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; }
-
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 18px; padding: 20px; border: 1px solid #f0f0f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-.card-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-
-.avatar img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%; 
-  object-fit: cover;
-  background: #f9f9f9;
-  border: 1px solid #eee;
+.header-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
 }
 
-.menu-wrapper { position: relative; }
-.dots { background: none; border: none; font-size: 20px; color: #aaa; cursor: pointer; }
-.dropdown-panel { position: absolute; top: 100%; left: 0; background: #fff; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-radius: 12px; width: 140px; z-index: 100; border: 1px solid #eee; }
-.menu-item { width: 100%; padding: 12px 15px; border: none; background: none; text-align: right; font-size: 13px; cursor: pointer; }
-.menu-item:hover { background: #f8f8f8; }
-.menu-item.delete { color: #e74c3c; border-top: 1px solid #eee; }
+.title-group h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0;
+}
 
-.card-body h3 { margin: 0 0 10px 0; font-size: 17px; font-weight: 700; }
-.info-row { font-size: 13px; color: #666; margin-bottom: 5px; }
-.job-tag { margin-top: 12px; display: inline-block; padding: 6px 14px; background: #f1f3f5; border-radius: 8px; font-size: 12px; font-weight: 600; color: #495057; }
+.title-group p {
+  color: var(--text-muted);
+  margin-top: 5px;
+}
 
-.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-.modal { background: #fff; width: 550px; max-height: 90vh; border-radius: 20px; display: flex; flex-direction: column; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.close-x-btn { background: #fee2e2; color: #ef4444; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.modal-body-scroll { padding: 20px; overflow-y: auto; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.field input, .field select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-.error-msg { color: #ef4444; font-size: 11px; margin-top: 4px; display: block; }
-.experience-block { grid-column: span 2; background: #fafafa; padding: 15px; border-radius: 12px; }
-.btn-primary-save { width: 100%; padding: 12px; background: #000; color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-.photo-preview img { max-width: 100px; height: auto; margin-top: 10px; border: 1px solid #ddd; }
+.btn-add {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+ width: 95px;
+  min-width: auto;
+  padding: 8px 15px; 
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(112, 34, 186, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
 
-.candidates-container {
-  padding: 30px;
-  background: #fcfcfd;
-  direction: rtl;
+.btn-add:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 6px 12px rgba(112, 34, 186, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-add:active {
+  transform: scale(0.96); 
+}
+
+.candidates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.candidate-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 25px;
+  border: 1px solid var(--border-color);
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.candidate-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--primary);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
 }
 
 .circular-img {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
+  width: 75px;
+  height: 75px;
+  border-radius: 20px;
   object-fit: cover;
-  border: 2px solid #f0f0f0;
+  border: 3px solid #f1f5f9;
 }
 
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-.title-group h1 { font-size: 28px; font-weight: 800; margin: 0; }
-.btn-add { background: #000; color: #fff; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; }
-
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 18px; padding: 20px; border: 1px solid #f0f0f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.dots-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
 
 .dropdown-panel {
   position: absolute;
-  top: 100%;
-  left: 0;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  left: 20px;
+  top: 60px;
+  background: #a544ff;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  width: 155px;
-  z-index: 1000;
-  border: 1px solid #eee;
-  overflow: hidden;
+  z-index: 100;
+  width: 170px;
+  padding: 5px;
 }
 
 .menu-item {
   width: 100%;
-  padding: 12px 15px;
+  padding: 10px;
   border: none;
-  background: #fff;
+  background: none;
   text-align: right;
-  font-size: 14px;
-  font-weight: 700;
-  color: #000000 !important;
   cursor: pointer;
-}
-
-.menu-item:hover { background: #f5f5f5; }
-.menu-item.delete { color: #d32f2f !important; border-top: 1px solid #f0f0f0; }
-
-.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-.modal { background: #fff; width: 550px; max-height: 90vh; border-radius: 20px; display: flex; flex-direction: column; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-body-scroll { padding: 20px; overflow-y: auto; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.field input, .field select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-.btn-primary-save { width: 100%; padding: 12px; background: #000; color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
-.preview-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin-top: 10px; }
-
-.candidates-container {
-  padding: 30px;
-  background: #fcfcfd;
-  direction: rtl;
-}
-
-.circular-img {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f0f0f0;
-}
-
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-.title-group h1 { font-size: 28px; font-weight: 800; margin: 0; }
-.btn-add { background: #000; color: #fff; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; }
-
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 18px; padding: 20px; border: 1px solid #f0f0f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); position: relative; }
-
-.dropdown-panel {
-  position: absolute;
-  top: 40px;
-  left: 10px;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  border-radius: 12px;
-  width: 155px;
-  z-index: 1000;
-  border: 1px solid #eee;
-  overflow: hidden;
-}
-
-.menu-item {
-  width: 100%;
-  padding: 12px 15px;
-  border: none;
-  background: #fff;
-  text-align: right;
-  font-size: 14px;
-  font-weight: 700;
-  color: #000000 !important;
-  cursor: pointer;
-}
-
-.menu-item:hover { background: #f5f5f5; }
-.menu-item.delete { color: #d32f2f !important; border-top: 1px solid #f0f0f0; }
-
-.input-error { border: 1px solid #ef4444 !important; background-color: #fef2f2 !important; }
-.error-text { color: #ef4444; font-size: 11px; margin-top: 4px; display: block; font-weight: 600; }
-
-.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-.modal { background: #fff; width: 550px; max-height: 90vh; border-radius: 20px; display: flex; flex-direction: column; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-body-scroll { padding: 20px; overflow-y: auto; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.field input, .field select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; }
-.btn-primary-save { width: 100%; padding: 12px; background: #000; color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-.preview-img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin-top: 10px; }
-.mt-8 { margin-top: 8px; }
-
-.candidates-container { padding: 30px; background: #fcfcfd; direction: rtl; font-family: sans-serif; }
-.circular-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.btn-add { background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 15px; padding: 15px; border: 1px solid #eee; position: relative; }
-.dropdown-panel { position: absolute; top: 40px; left: 10px; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 8px; z-index: 100; width: 120px; border: 1px solid #eee; }
-.menu-item { width: 100%; padding: 10px; border: none; background: none; text-align: right; cursor: pointer; font-weight: 600; color: #000; }
-.menu-item.delete { color: red !important; }
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(3px); }
-.modal { background: #fff; width: 500px; max-height: 90vh; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
-.modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-.modal-body-scroll { padding: 20px; overflow-y: auto; }
-.center-avatar { display: flex; justify-content: center; margin-bottom: 15px; }
-.avatar-upload { text-align: center; }
-.preview-circular { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #000; display: block; margin: 0 auto 8px; }
-.upload-label { font-size: 12px; color: #000; text-decoration: underline; cursor: pointer; font-weight: bold; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; }
-.field input, .field select { width: 100%; padding: 9px; border: 1px solid #ddd; border-radius: 8px; }
-.input-error { border: 1px solid red !important; background: #fff5f5; }
-.error-text { color: red; font-size: 10px; font-weight: bold; }
-.btn-primary-save { width: 100%; padding: 12px; background: #000; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin: 15px; width: calc(100% - 30px); }
-
-
-.candidates-container { padding: 30px; background: #fcfcfd; direction: rtl; }
-.circular-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.btn-add { background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 18px; padding: 20px; border: 1px solid #f0f0f0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-.dropdown-panel { position: absolute; top: 45px; left: 15px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 10px; z-index: 100; width: 130px; border: 1px solid #eee; overflow: hidden; }
-.menu-item { width: 100%; padding: 12px; border: none; background: none; text-align: right; cursor: pointer; font-weight: 600; font-size: 14px; }
-.menu-item:hover { background: #f9f9f9; }
-.menu-item.delete { color: #e53e3e; }
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-.modal { background: #fff; width: 520px; max-height: 92vh; border-radius: 24px; display: flex; flex-direction: column; position: relative; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.close-x { background: none; border: none; font-size: 24px; cursor: pointer; }
-.modal-body-scroll { padding: 25px; overflow-y: auto; }
-.center-avatar { display: flex; justify-content: center; margin-bottom: 20px; }
-.preview-circular { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #000; display: block; margin: 0 auto 10px; }
-.upload-btn { background: #f0f0f0; border: none; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: #333; }
-.field input, .field select { width: 100%; padding: 11px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; }
-.input-error { border: 1px solid #e53e3e !important; background: #fff5f5; }
-.error-text { color: #e53e3e; font-size: 11px; font-weight: bold; margin-top: 4px; display: block; }
-.btn-primary-save { width: calc(100% - 40px); margin: 0 20px 20px; padding: 14px; background: #000; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; }
-.view-cv { color: #000; text-decoration: underline; font-weight: bold; font-size: 13px; display: inline-block; margin-top: 5px; }
-.mt-8 { margin-top: 8px; }
-
-.candidates-container { padding: 30px; background: #fcfcfd; direction: rtl; font-family: 'Segoe UI', sans-serif; }
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.btn-add { background: #000; color: #fff; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #f0f0f0; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-.circular-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
-.dropdown-panel { position: absolute; top: 45px; left: 15px; background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; z-index: 100; width: 140px; border: 1px solid #eee; overflow: hidden; }
-.menu-item { width: 100%; padding: 12px; border: none; background: none; text-align: right; cursor: pointer; font-weight: 600; font-size: 14px; }
-.menu-item:hover { background: #f9f9f9; }
-.menu-item.delete { color: #e53e3e; }
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
-.modal { background: #fff; width: 550px; max-height: 90vh; border-radius: 28px; display: flex; flex-direction: column; overflow: hidden; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-body-scroll { padding: 25px; overflow-y: auto; }
-.preview-circular { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 3px solid #000; display: block; margin: 0 auto 12px; }
-.upload-btn { background: #f0f0f0; border: none; padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #444; }
-.field input, .field select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; }
-.input-error { border: 1px solid #e53e3e !important; background: #fff5f5; }
-.btn-primary-save { width: calc(100% - 40px); margin: 0 20px 20px; padding: 15px; background: #000; color: #fff; border: none; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; }
-.view-cv { color: #000; text-decoration: underline; font-weight: bold; }
-.mt-8 { margin-top: 8px; }
-
-
-.candidates-container { padding: 30px; background: #fcfcfd; direction: rtl; font-family: 'Segoe UI', sans-serif; }
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.title-group h1 { font-size: 26px; font-weight: 800; margin: 0; color: #1a1a1a; }
-.btn-add { background: #000; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-.btn-add:hover { background: #333; }
-
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #f0f0f0; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-.circular-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #f8f9fa; }
-
-.menu-wrapper { position: absolute; top: 20px; left: 20px; }
-.dots { background: none; border: none; font-size: 22px; cursor: pointer; color: #ccc; }
-.dropdown-panel { position: absolute; left: 0; top: 30px; background: #fff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 10; width: 120px; }
-.menu-item { width: 100%; padding: 10px 15px; border: none; background: none; text-align: right; cursor: pointer; font-weight: 600; font-size: 14px; }
-.menu-item:hover { background: #f8f9fa; }
-.menu-item.delete { color: #dc3545; border-top: 1px solid #eee; }
-
-.job-tag { margin-top: 15px; display: inline-block; padding: 6px 15px; background: #f1f3f5; border-radius: 10px; font-size: 12px; font-weight: 700; color: #495057; }
-
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: #fff; width: 550px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-.modal-body-scroll { padding: 25px; max-height: 70vh; overflow-y: auto; }
-.preview-circular { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #000; margin-bottom: 10px; }
-.upload-btn { background: #f0f0f0; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; }
-
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: right; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #444; }
-.field input, .field select { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px; font-size: 14px; }
-.btn-primary-save { width: calc(100% - 40px); margin: 0 20px 20px; padding: 15px; background: #000; color: #fff; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; }
-
-
-.candidates-container { padding: 30px; background: #fcfcfd; direction: rtl; font-family: 'Segoe UI', sans-serif; }
-.header-modern { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.title-group h1 { font-size: 26px; font-weight: 800; margin: 0; color: #1a1a1a; }
-.btn-add { background: #000; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; }
-
-.candidates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.candidate-card { background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #f0f0f0; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-.circular-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #f8f9fa; }
-
-.menu-wrapper { position: absolute; top: 20px; left: 20px; }
-.dots { background: none; border: none; font-size: 22px; cursor: pointer; color: #ccc; }
-.dropdown-panel { position: absolute; left: 0; top: 30px; background: #fff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 10; width: 120px; }
-.menu-item { width: 100%; padding: 10px 15px; border: none; background: none; text-align: right; cursor: pointer; font-weight: 600; font-size: 14px; color: #000; }
-.menu-item:hover { background: #f8f9fa; }
-.menu-item.delete { color: #dc3545; border-top: 1px solid #eee; }
-
-.job-tag { margin-top: 15px; display: inline-block; padding: 6px 15px; background: #f1f3f5; border-radius: 10px; font-size: 12px; font-weight: 700; color: #495057; }
-
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-.modal { background: #fff; width: 550px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden; }
-.modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.close-x { background: none; border: none; font-size: 24px; cursor: pointer; }
-.modal-body-scroll { padding: 25px; max-height: 70vh; overflow-y: auto; }
-.preview-circular { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid #000; display: block; margin: 0 auto; }
-.upload-btn { background: #f0f0f0; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: block; margin: 10px auto; }
-
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: right; }
-.field.full { grid-column: span 2; }
-.field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #444; }
-.field input, .field select { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px; font-size: 14px; }
-.btn-primary-save { width: calc(100% - 40px); margin: 0 20px 20px; padding: 15px; background: #000; color: #fff; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; }
-
-
-.delete-img-btn {
-  background: #ffe5e5;
-  color: #d32f2f;
-  border: none;
-  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 13px;
   border-radius: 8px;
-  font-size: 12px;
-  cursor: pointer;
-  margin-top: 8px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
+
+.menu-item:hover { background: var(--bg-subtle); }
+.menu-item.delete { color: var(--danger); }
+
+.candidate-name {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: var(--text-dark);
+}
+
+.info-list { display: flex; flex-direction: column; gap: 6px; }
+.info-item { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+.info-item i { color: var(--primary); opacity: 0.6; }
+
+.job-tag-wrapper { margin-top: 15px; }
+.job-tag {
+  padding: 5px 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal-container {
+  background: #fff;
+  width: 95%;
+  max-width: 650px;
+  border-radius: 25px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header-modern {
+  padding: 20px 25px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-body-scroll { padding: 25px; overflow-y: auto; }
+
+.center-avatar-section { margin-bottom: 25px; display: flex; justify-content: center; }
+.image-frame { position: relative; width: 110px; height: 110px; }
+.preview-circular { width: 100%; height: 100%; border-radius: 30px; object-fit: cover; }
+
+.floating-upload-btn {
+  position: absolute;
+  bottom: -5px;
+  left: -5px;
+  background: var(--primary);
+  color: #fff;
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.field.full { grid-column: span 2; }
+.field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+
+.input-with-icon { position: relative; }
+.input-with-icon i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+.input-with-icon input, .input-with-icon select {
+  width: 100%;
+  padding: 10px 35px 10px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: #fcfcfd;
+}
+
+.input-error { border-color: var(--danger) !important; background: #fff5f5 !important; }
+
+.validation-msg { color: var(--danger); font-size: 11px; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+.experience-box { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px dashed var(--border-color); }
+.experience-box.active { border-color: var(--primary); }
+
+.modal-footer-modern { padding: 15px 25px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
+.btn-save { flex: 2; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+.btn-cancel { flex: 1; background: #f1f5f9; border: none; padding: 12px; border-radius: 12px; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .candidates-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .field.full { grid-column: span 1; }
+  .modal-container { height: 100%; border-radius: 0; max-height: 100%; }
+  .modal-footer-modern { flex-direction: column-reverse; }
+}
+

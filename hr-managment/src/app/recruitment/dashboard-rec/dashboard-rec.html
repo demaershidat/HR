@@ -1,69 +1,71 @@
-<div class="dashboard-wrapper" dir="rtl">
-  <div class="top-stats-grid">
-    <div class="stat-card orange">
-      <span>إجمالي الوظائف</span>
-      <h2>{{ totalVacancies }}</h2>
+<div class="dashboard-container" dir="rtl">
+  <div class="stats-grid">
+    <div class="stat-item white-theme">
+      <div class="icon-box-white"><i class="fas fa-briefcase"></i></div>
+      <div class="stat-info">
+        <span class="label-white">إجمالي الوظائف</span>
+        <h2 class="value-white">{{ totalVacancies }}</h2>
+      </div>
     </div>
-    <div class="stat-card green">
-      <span>المتقدمين</span>
-      <h2>{{ advancedCandidates }}</h2>
+    <div class="stat-item white-theme">
+      <div class="icon-box-white"><i class="fas fa-users"></i></div>
+      <div class="stat-info">
+        <span class="label-white">المتقدمين</span>
+        <h2 class="value-white">{{ advancedCandidates }}</h2>
+      </div>
     </div>
-    <div class="stat-card dark-green">
-      <span>معدل قبول العرض</span>
-      <h2>{{ oarRate }}%</h2>
+    <div class="stat-item white-theme">
+      <div class="icon-box-white"><i class="fas fa-chart-pie"></i></div>
+      <div class="stat-info">
+        <span class="label-white">معدل قبول العرض</span>
+        <h2 class="value-white">{{ oarRate }}%</h2>
+      </div>
     </div>
   </div>
 
-  <div class="main-content-grid">
-    
-    <div class="content-card">
-      <h3>
-        <span>توزيع المرشحين حسب الوظيفة</span>
-      </h3>
-      <div class="skill-item" *ngFor="let skill of jobSkillsStats">
-        <div class="skill-info">
-          <div class="avatar-circle">{{ skill.title[0] }}</div>
-          <div class="can-details">
-            <p class="name">{{ skill.title }}</p>
+  <div class="dashboard-main-grid">
+    <div class="card-panel-white">
+      <div class="panel-header-white">
+        <h3>توزيع المرشحين</h3>
+      </div>
+      <div class="panel-body">
+        <div class="list-item-white" *ngFor="let skill of jobSkillsStats">
+          <div class="item-content">
+            <div class="mini-avatar-white">{{ skill.title[0] }}</div>
+            <p class="item-name-white">{{ skill.title }}</p>
           </div>
+          <span class="badge-purple-white">{{ skill.count }}</span>
         </div>
-        <span class="count">{{ skill.count }}</span>
       </div>
     </div>
 
-    <div class="content-card">
-      <h3>
-        <span>حالة عرض العمل</span>
-      </h3>
-      <div class="chart-container">
-        <canvas baseChart
-          [data]="pieChartData"
-          [options]="pieChartOptions"
-          [type]="'pie'">
-        </canvas>
+    <div class="card-panel-white">
+      <div class="panel-header-white">
+        <h3>حالة العرض</h3>
+      </div>
+      <div class="panel-body centered">
+        <div class="chart-wrapper">
+          <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="'pie'"></canvas>
+        </div>
       </div>
     </div>
 
-    <div class="content-card">
-      <div class="header-flex">
-        <h3>
-          <span>أحدث المرشحين</span>
-          <a href="#">عرض الكل</a>
-        </h3>
+    <div class="card-panel-white full-width-mobile">
+      <div class="panel-header-white">
+        <h3>أحدث المرشحين</h3>
       </div>
-      <div class="candidate-row" *ngFor="let can of recentCandidates">
-        <div class="skill-info">
-          <img [src]="can.profile_image" 
-               (error)="handleImageError($event)" 
-               class="avatar-img">
-          <div class="can-details">
-            <p class="name">{{ can.full_name }}</p>
-            <p class="title">{{ can.display_title }}</p>
+      <div class="panel-body">
+        <div class="candidate-item-white" *ngFor="let can of recentCandidates">
+          <div class="item-content">
+            <img [src]="can.profile_image" (error)="handleImageError($event)" class="round-img-white">
+            <div class="details">
+              <p class="name-white">{{ can.full_name }}</p>
+              <p class="sub-white">{{ can.display_title }}</p>
+            </div>
           </div>
+          <span class="id-label-white">#{{ can.id }}</span>
         </div>
-        <span class="count">#{{ can.id }}</span>
       </div>
     </div>
-
   </div>
 </div>

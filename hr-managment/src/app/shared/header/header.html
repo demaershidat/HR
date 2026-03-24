@@ -6,8 +6,8 @@
           <span class="badge">0</span>
           <i class="fas fa-bell"></i>
         </div>
-        <div class="icon-item lang-icon">
-          <span>A|文</span>
+        <div class="icon-item lang-box">
+          <span>EN</span>
         </div>
         <div class="icon-item setting-icon">
           <i class="fas fa-cog"></i>
@@ -16,10 +16,12 @@
     </div>
 
     <div class="header-right">
-      <button class="logout-btn" (click)="logout()">
-        <span>تسجيل الخروج</span>
-        <i class="fas fa-sign-out-alt"></i>
-      </button>
+      <div class="user-section">
+        <button class="logout-btn" (click)="logout()">
+          <span>تسجيل الخروج</span>
+          <i class="fas fa-power-off"></i>
+        </button>
+      </div>
     </div>
   </div>
 </header>
