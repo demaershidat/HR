@@ -1,101 +1,114 @@
 <div class="admin-layout" dir="rtl">
-  <header class="main-header">
-    <div class="title-group">
-      <h2>إدارة المقابلات</h2>
-      <p style="color: var(--text-muted); margin-top: 5px;">جدولة ومتابعة مقابلات التوظيف</p>
+  <header class="glass-header">
+    <div class="title-section">
+      <h1>المقابلات المجدولة</h1>
+      <p>إدارة مواعيد المقابلات لشركة Solid Soft</p>
     </div>
-    <div class="actions">
-      <input type="text" placeholder="بحث عن مرشح..." (input)="onSearch($event)">
-      <button class="btn-primary" (click)="openScheduleModal()">+ مقابلة </button>
+
+    <div class="header-controls">
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="بحث عن مرشح..." (input)="onSearch($event)" class="premium-input">
+      </div>
+      <button class="glow-add-btn" (click)="openScheduleModal()">
+        <i class="fas fa-plus"></i>
+        <span>إضافة مقابلة</span>
+      </button>
     </div>
   </header>
 
-  <div class="interviews-grid">
-    <div class="interview-card" *ngFor="let item of interviewees">
-      <div class="card-header">
-        <div class="user-info">
-          <img [src]="item.profile_image_url ? 'http://localhost:3000/uploads/' + item.profile_image_url : 'assets/unknown.png'" (error)="handleImageError($event)">
-          <div>
-            <h3 class="candidate-name">{{item.full_name}}</h3>
-            <span class="job-title">{{item.display_job}}</span>
+  <div class="interviews-vertical-list">
+    <div class="interview-item-card" *ngFor="let item of interviewees">
+      <div class="interview-main-content">
+        
+        <div class="candidate-info-group">
+          <img [src]="item.profile_image_url ? 'http://localhost:3000/uploads/' + item.profile_image_url : 'assets/unknown.png'" 
+               (error)="handleImageError($event)" class="avatar">
+          <div class="meta">
+            <h4>{{ item.full_name }}</h4>
+            <span class="job-badge">{{ item.display_job }}</span>
           </div>
         </div>
-        <span class="status-badge" [class.done]="item.is_finished==1" [class.pending]="item.is_finished!=1">
-          {{item.is_finished==1 ? 'تمت' : 'انتظار'}}
-        </span>
-      </div>
 
-      <div class="card-body">
-        <div class="info-row">
-          <i class="fas fa-calendar-alt"></i>
-          <span>{{item.interview_date | date:'yyyy-MM-dd'}}</span>
+        <div class="datetime-group">
+          <div class="info-pill date">
+            <i class="far fa-calendar-alt"></i>
+            <span>{{ item.interview_date | date:'yyyy-MM-dd' }}</span>
+          </div>
+          <div class="info-pill time">
+            <i class="far fa-clock"></i>
+            <span>{{ item.interview_time }}</span>
+          </div>
         </div>
-        <div class="info-row">
-          <i class="fas fa-clock"></i>
-          <span>{{item.interview_time}}</span>
-        </div>
-        <div class="description-box" [title]="item.interview_description">
-          {{item.interview_description || 'لا توجد ملاحظات إضافية'}}
-        </div>
-      </div>
 
-      <div class="card-actions">
-        <button class="btn-card-edit" (click)="openScheduleModal(item)">تعديل</button>
-        <button class="btn-card-delete" [class.disabled-btn]="item.is_from_stages" (click)="deleteInterview(item)">
-          <i class="fas fa-trash"></i>
-        </button>
+        <div class="description-group">
+          <div class="desc-content">
+            <i class="fas fa-align-right"></i>
+            <p [title]="item.interview_description">
+              {{ item.interview_description || 'مقابلة نظامية (بدون وصف)' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="actions-wrapper">
+          <div class="action-btns">
+            <button class="btn-edit" (click)="openScheduleModal(item)" title="تعديل">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button class="btn-delete" 
+                    (click)="deleteInterview(item)" 
+                    [ngStyle]="{
+                      'opacity': item.canDelete ? '1' : '0.4',
+                      'cursor': item.canDelete ? 'pointer' : 'not-allowed'
+                    }"
+                    [title]="item.canDelete ? 'حذف المقابلة' : 'لا يمكن حذف المقابلة الأساسية'">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
       </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && interviewees.length === 0">
+       <p>لا توجد مقابلات مجدولة حالياً لهذا التصنيف.</p>
     </div>
   </div>
 
-  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h3 style="margin-top:0; color: var(--primary); margin-bottom: 20px;">
-        {{isEditMode ? 'تعديل تفاصيل' : 'إضافة'}} مقابلة
-      </h3>
+  <div class="blur-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="compact-modal" (click)="$event.stopPropagation()">
+      <h2 class="modal-title-mini">{{ isEditMode ? 'تعديل موعد' : 'جدولة مقابلة' }}</h2>
+      
+      <div class="input-container">
+        <label>المرشح</label>
+        <select [(ngModel)]="formData.candidate_id" class="modern-input" [disabled]="isEditMode">
+          <option value="" disabled>اختر المرشح</option>
+          <option *ngFor="let c of allCandidates" [value]="c.id">{{c.full_name}}</option>
+        </select>
+      </div>
 
-      <form (ngSubmit)="saveSchedule()">
-        <div class="error-box" *ngIf="errorMessage">{{errorMessage}}</div>
-
-        <div class="form-group" *ngIf="isEditMode" style="margin-bottom: 15px;">
-          <label>المرشح</label>
-          <input type="text" [value]="getCandidateName(formData.candidate_id)" disabled style="background: #f8fafc;">
+      <div class="row-inputs">
+        <div class="input-container">
+          <label>التاريخ</label>
+          <input type="date" [(ngModel)]="formData.interview_date" class="modern-input">
         </div>
-
-        <div class="form-group" *ngIf="!isEditMode" style="margin-bottom: 15px;">
-          <label>اختيار مرشح</label>
-          <select [(ngModel)]="formData.candidate_id" name="candidate">
-            <option value="" disabled>اختر المرشح</option>
-            <option *ngFor="let c of allCandidates" [value]="c.id">{{c.full_name}}</option>
-          </select>
+        <div class="input-container">
+          <label>الوقت</label>
+          <input type="time" [(ngModel)]="formData.interview_time" class="modern-input">
         </div>
+      </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-          <div class="form-group">
-            <label>التاريخ</label>
-            <input type="date" [(ngModel)]="formData.interview_date" name="date">
-          </div>
-          <div class="form-group">
-            <label>الوقت</label>
-            <input type="time" [(ngModel)]="formData.interview_time" name="time">
-          </div>
-        </div>
+      <div class="input-container">
+        <label>وصف المقابلة</label>
+        <textarea [(ngModel)]="formData.interview_description" class="modern-input" rows="2" placeholder="أضف وصفاً هنا..."></textarea>
+      </div>
 
-        <div class="form-group" style="margin-bottom: 15px;">
-          <label>الوصف / ملاحظات</label>
-          <textarea placeholder="تفاصيل المقابلة..." [(ngModel)]="formData.interview_description" name="desc" rows="3"></textarea>
-        </div>
+      <div class="error-msg" *ngIf="errorMessage">{{errorMessage}}</div>
 
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
-          <input type="checkbox" [(ngModel)]="formData.is_finished" name="finished" id="finishCheck" style="width: auto;">
-          <label for="finishCheck" style="margin:0; cursor:pointer;">هل تمت المقابلة؟</label>
-        </div>
-
-        <div class="card-actions" style="border:none; padding:0;">
-          <button type="button" (click)="closeModal()" style="flex:1; background:#f1f5f9; border:none; border-radius:12px; cursor:pointer;">إلغاء</button>
-          <button type="submit" class="btn-primary" style="flex:2;">حفظ البيانات</button>
-        </div>
-      </form>
+      <div class="action-buttons-mini">
+        <button class="btn-cancel-mini" (click)="closeModal()">إلغاء</button>
+        <button class="btn-save-mini" (click)="saveSchedule()">حفظ</button>
+      </div>
     </div>
   </div>
 </div>

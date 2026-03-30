@@ -5,11 +5,11 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-
 import jobRoute from './routes/jobRoute';
 import candidateRoute from './routes/candidateRoute';
 import authRoute from './routes/authRoute';
 import interviewRoutes from './routes/interviewRoutes'; 
+import stageRoute from './routes/stageRoute';
 
 dotenv.config();
 const app = express();
@@ -28,6 +28,7 @@ app.use('/jobs', jobRoute);
 app.use('/candidates', candidateRoute);
 app.use('/login', authRoute);
 app.use('/interviews', interviewRoutes);
+app.use('/stages', stageRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

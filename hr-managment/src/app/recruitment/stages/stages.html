@@ -1,61 +1,86 @@
 <div class="admin-layout" dir="rtl">
-  <header class="main-header">
-    <div class="title-group">
+  <header class="glass-header">
+    <div class="title-section">
       <h1>مراحل التوظيف</h1>
-      <p>إدارة وتنظيم حالة المرشحين بناءً على المراحل الحالية</p>
+      <p>إدارة المسار المهني لشركة Solid Soft</p>
     </div>
-    <div class="header-actions">
-      <div class="field">
-        <select [(ngModel)]="selectedFilter" (change)="filterCandidates()" class="modern-select">
-          <option value="all">كل الوظائف المتاحة</option>
-          <optgroup label="الوظائف الرسمية">
-            <option *ngFor="let job of jobs" [value]="job.id">{{ job.job_title }}</option>
-          </optgroup>
-          <optgroup label="وظائف أخرى">
-            <option *ngFor="let custom of uniqueCustomJobs" [value]="custom">{{ custom }}</option>
-          </optgroup>
-        </select>
-      </div>
+
+    <div class="header-controls">
+      <select [(ngModel)]="selectedFilter" (change)="filterCandidates()" class="premium-select">
+        <option value="all">جميع الوظائف</option>
+        <option *ngFor="let job of jobs" [value]="job.id">{{ job.job_title }}</option>
+        <option *ngFor="let custom of uniqueCustomJobs" [value]="custom">{{ custom }}</option>
+      </select>
+      <button class="glow-add-btn" (click)="openStageForm()">
+        <i class="fas fa-plus"></i>
+        <span>إضافة مرحلة</span>
+      </button>
     </div>
   </header>
 
   <div class="stages-vertical-list">
-    <div class="stage-row-container" *ngFor="let stage of stages">
-      <div class="stage-row-header">
+    <div class="stage-section" *ngFor="let stage of stages; trackBy: trackByStageId" [style.--stage-color]="stage.color">
+      <div class="stage-card-header">
         <div class="stage-info">
-          <span class="stage-dot" [style.background]="stage.color"></span>
           <h3>{{ stage.name }}</h3>
+          <span class="count-pill">{{ getCandidatesByStage(stage.id).length }} مرشح</span>
         </div>
-        <span class="status-active">{{ getCandidatesByStage(stage.id).length }} مرشح</span>
+        <div class="stage-actions" *ngIf="stage.id !== 1">
+          <button (click)="openStageForm(stage)"><i class="fas fa-edit"></i></button>
+          <button (click)="deleteStage(stage)"><i class="fas fa-trash"></i></button>
+        </div>
       </div>
 
-      <div class="candidates-horizontal-scroll">
-        <div class="mini-candidate-card" *ngFor="let c of getCandidatesByStage(stage.id)">
-          <div class="card-content">
-            <img [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'" 
-                 (error)="handleImageError($event)" class="candidate-avatar">
-            <div class="candidate-details">
-              <h4>{{ c.full_name }}</h4>
-              <span class="job-tag-text">{{ getJobTitle(c) }}</span>
-              
-              <div class="rating-stars">
-                <span *ngFor="let star of [1,2,3,4,5]" 
-                      (click)="setRating(c, star)" 
-                      [class.filled]="star <= c.rating">★</span>
-              </div>
-            </div>
+      <div class="candidates-scroll-area">
+        <div class="candidate-card" *ngFor="let c of getCandidatesByStage(stage.id); trackBy: trackByCandidateId">
+          <div class="card-top">
+            <img [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'" (error)="handleImageError($event)">
+            <div class="candidate-meta">
+  <h4>{{ c.full_name }}</h4>
+  <span class="job-tag">{{ c.display_job }}</span>
+</div>
           </div>
-
-          <div class="card-footer-actions">
-            <select [ngModel]="c.current_stage" (change)="updateStage(c, $any($event.target).value)" class="stage-dropdown">
+          
+          <div class="card-bottom">
+            <select [ngModel]="c.current_stage" (change)="updateStage(c, $any($event.target).value)" class="stage-select">
               <option *ngFor="let s of stages" [value]="s.id">{{ s.name }}</option>
             </select>
+            <div class="rating-stars" *ngIf="stage.id !== 1">
+              <span *ngFor="let star of [1,2,3,4,5]" (click)="setRating(c, star)" [class.active]="star <= c.rating">★</span>
+            </div>
           </div>
         </div>
-
-        <div class="empty-state-small" *ngIf="getCandidatesByStage(stage.id).length === 0">
-          <span class="text-muted">لا يوجد مرشحين في هذه المرحلة حالياً</span>
+        
+        <div class="empty-state-mini" *ngIf="getCandidatesByStage(stage.id).length === 0">
+          <p>لا يوجد مرشحين حالياً</p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blur-overlay" *ngIf="showStageForm" (click)="closeStageForm()">
+    <div class="compact-modal" (click)="$event.stopPropagation()">
+      <h2 class="modal-title-mini">{{ isEditMode ? 'تعديل المرحلة' : 'إضافة مرحلة جديدة' }}</h2>
+      <div class="input-container">
+        <label>اسم المرحلة</label>
+        <input type="text" [(ngModel)]="newStageName" placeholder="مثال: مقابلة تقنية" class="modern-input">
+      </div>
+      <div class="type-selection-mini">
+        <label>نوع المرحلة</label>
+        <div class="type-options">
+          <div class="type-pill" [class.active]="newStageType==='interview'" (click)="selectStageType('interview')">
+            <i class="fas fa-comments"></i>
+            <span>مقابلة</span>
+          </div>
+          <div class="type-pill" [class.active]="newStageType==='final'" (click)="selectStageType('final')">
+            <i class="fas fa-flag-checkered"></i>
+            <span>نهائية</span>
+          </div>
+        </div>
+      </div>
+      <div class="action-buttons-mini">
+        <button class="btn-cancel-mini" (click)="closeStageForm()">إلغاء</button>
+        <button class="btn-save-mini" (click)="saveStage()">{{ isEditMode ? 'تحديث' : 'حفظ' }}</button>
       </div>
     </div>
   </div>

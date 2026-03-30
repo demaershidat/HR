@@ -46,7 +46,6 @@
     <div class="modal-container shadow-2xl">
       <div class="modal-header-modern">
         <h2>{{ isViewMode ? 'تفاصيل المرشح' : 'بيانات المرشح' }}</h2>
-        <button class="close-modal" (click)="closeModal()">×</button>
       </div>
 
       <div class="modal-body-scroll">
@@ -67,9 +66,6 @@
                 <input type="file" (change)="onPhotoSelect($event)" hidden accept="image/*">
               </label>
             </div>
-            <div class="validation-msg center" *ngIf="isInvalid(candidateForm, 'profile_image_url')">
-               <i class="fas fa-exclamation-circle"></i> الصورة الشخصية مطلوبة
-            </div>
             <button type="button" class="btn-remove-img" *ngIf="!isViewMode && (previewUrl || candidateForm.get('profile_image_url')?.value)" (click)="removeImage()">حذف الصورة</button>
           </div>
         </div>
@@ -83,7 +79,7 @@
                 <input type="text" formControlName="full_name" [class.input-error]="isInvalid(candidateForm, 'full_name')">
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'full_name')">
-                <i class="fas fa-exclamation-circle"></i> يرجى إدخال الاسم الرباعي
+                <i class="fas fa-exclamation-circle"></i> يرجى إدخال الاسم الرباعي كاملاً
               </div>
             </div>
 
@@ -94,7 +90,7 @@
                 <input type="email" formControlName="email" [class.input-error]="isInvalid(candidateForm, 'email')">
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'email')">
-                <i class="fas fa-exclamation-circle"></i> بريد إلكتروني غير صالح
+                <i class="fas fa-exclamation-circle"></i> بريد إلكتروني غير صحيح
               </div>
             </div>
 
@@ -102,10 +98,10 @@
               <label>رقم الهاتف</label>
               <div class="input-with-icon">
                 <i class="fas fa-phone"></i>
-                <input type="text" formControlName="phone" [class.input-error]="isInvalid(candidateForm, 'phone')">
+                <input type="text" formControlName="phone" [class.input-error]="isInvalid(candidateForm, 'phone')" placeholder="07XXXXXXXX">
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'phone')">
-                <i class="fas fa-exclamation-circle"></i> رقم الهاتف مطلوب
+                <i class="fas fa-exclamation-circle"></i> رقم هاتف غير صحيح
               </div>
             </div>
 
@@ -119,7 +115,7 @@
                 </select>
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'address')">
-                <i class="fas fa-exclamation-circle"></i> يرجى اختيار العنوان
+                <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
               </div>
             </div>
 
@@ -130,7 +126,7 @@
                 <input type="text" formControlName="university_major" [class.input-error]="isInvalid(candidateForm, 'university_major')">
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'university_major')">
-                <i class="fas fa-exclamation-circle"></i> التخصص مطلوب
+                <i class="fas fa-exclamation-circle"></i> هذا الحقل مطلوب
               </div>
             </div>
 
@@ -141,7 +137,7 @@
                 <input type="number" formControlName="graduation_year" [class.input-error]="isInvalid(candidateForm, 'graduation_year')">
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'graduation_year')">
-                <i class="fas fa-exclamation-circle"></i> مطلوب
+                <i class="fas fa-exclamation-circle"></i> سنة غير صحيحة (2010 - {{currentYear}})
               </div>
             </div>
 
@@ -156,7 +152,7 @@
                 </select>
               </div>
               <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'job_id')">
-                <i class="fas fa-exclamation-circle"></i> يرجى تحديد الوظيفة
+                <i class="fas fa-exclamation-circle"></i> يرجى اختيار وظيفة
               </div>
               <input *ngIf="isCustomJob" formControlName="custom_job" placeholder="اكتب المسمى الوظيفي هنا" class="mt-2">
             </div>
@@ -178,12 +174,15 @@
 
             <div class="field full">
               <label>السيرة الذاتية (PDF)</label>
-              <div class="input-with-icon">
+              <div *ngIf="!isViewMode" class="input-with-icon">
                 <i class="fas fa-file-pdf"></i>
-                <input type="file" (change)="onFileSelect($event)" accept=".pdf" [class.input-error]="isInvalid(candidateForm, 'cv_url')">
+                <input type="file" (change)="onFileSelect($event)" accept=".pdf">
               </div>
-              <div class="validation-msg" *ngIf="isInvalid(candidateForm, 'cv_url')">
-                <i class="fas fa-exclamation-circle"></i> ملف السيرة الذاتية مطلوب
+              
+              <div *ngIf="candidateForm.get('cv_url')?.value" class="cv-display-box mt-2">
+                <button type="button" class="btn-view-cv" (click)="openCv()">
+                  <i class="fas fa-file-pdf"></i> عرض السيرة الذاتية المرفقة
+                </button>
               </div>
             </div>
           </div>

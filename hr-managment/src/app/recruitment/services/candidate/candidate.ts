@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CandidateService {
   private apiUrl = 'http://localhost:3000/candidates';
-  private interviewUrl = 'http://localhost:3000/interviews'; // رابط المقابلات المنفصل
+  private interviewUrl = 'http://localhost:3000/interviews';
 
   constructor(private http: HttpClient) {}
 
   getAllCandidates(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/all`);
+    return this.http.get<any[]>(`${this.apiUrl}/all?t=${Date.now()}`).pipe(
+      catchError(err => {
+        console.error('Failed to fetch candidates', err);
+        return throwError(() => err);
+      })
+    );
   }
 
   updateCandidate(id: number, data: FormData | any): Observable<any> {
@@ -31,7 +36,12 @@ export class CandidateService {
 
 
   getAllInterviews(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.interviewUrl}/all`);
+    return this.http.get<any[]>(`${this.interviewUrl}/all?t=${Date.now()}`).pipe(
+      catchError(err => {
+        console.error('Failed to fetch interviews', err);
+        return throwError(() => err);
+      })
+    );
   }
 
   createInterview(data: any): Observable<any> {

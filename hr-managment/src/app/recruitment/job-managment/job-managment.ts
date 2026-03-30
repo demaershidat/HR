@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { JobService } from '../services/job/job-service';
 import { CandidateService } from '../services/candidate/candidate';
@@ -10,6 +10,9 @@ import { CandidateService } from '../services/candidate/candidate';
   standalone: false
 })
 export class JobManagment implements OnInit {
+
+  activeDropdown: number | null = null;
+
   jobForm!: FormGroup;
   applyForm!: FormGroup;
   isModalOpen = false;
@@ -37,6 +40,17 @@ export class JobManagment implements OnInit {
     this.initForms();
     this.loadJobs();
   }
+
+toggleDropdown(id: number) {
+  this.activeDropdown = this.activeDropdown === id ? null : id;
+}
+
+@HostListener('document:click', ['$event'])
+closeDropdownOutside(event: any) {
+  if (!event.target.closest('.dropdown-actions')) {
+    this.activeDropdown = null;
+  }
+}
 
   initForms() {
     this.jobForm = this.fb.group({
@@ -164,7 +178,14 @@ export class JobManagment implements OnInit {
     if (!file) return;
 
     if (type === 'cv') {
+      if (file.type !== 'application/pdf') {
+        alert('يرجى اختيار ملف بصيغة PDF فقط');
+        event.target.value = '';
+        this.applyForm.patchValue({ cvFile: null });
+        return;
+      }
       this.applyForm.patchValue({ cvFile: file });
+      this.applyForm.get('cvFile')?.updateValueAndValidity();
     } else if (type === 'photo') {
       this.applyForm.patchValue({ photoFile: file });
       const reader = new FileReader();
@@ -189,8 +210,10 @@ export class JobManagment implements OnInit {
   onApplySubmit() {
     this.applySubmitted = true;
     if (this.applyForm.invalid) { this.applyForm.markAllAsTouched(); return; }
+    
     const formData = new FormData();
     const val = this.applyForm.value;
+    
     formData.append('full_name', val.fullName);
     formData.append('email', val.email);
     formData.append('phone', val.phone);
@@ -202,6 +225,7 @@ export class JobManagment implements OnInit {
     formData.append('exp_company_name', val.expCompany || '');
     formData.append('exp_position', val.expPosition || '');
     formData.append('exp_period', val.expPeriod || '');
+    
     if (val.cvFile) formData.append('cvFile', val.cvFile);
     if (val.photoFile) formData.append('photoFile', val.photoFile);
 

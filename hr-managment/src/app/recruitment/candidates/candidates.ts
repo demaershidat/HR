@@ -36,26 +36,29 @@ export class Candidates implements OnInit {
     this.loadInitialData();
   }
 
-  initForm() {
-    this.candidateForm = this.fb.group({
-      id: [null],
-      full_name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required]],
-      address: ['', Validators.required],
-      university_major: ['', Validators.required],
-      graduation_year: ['', [Validators.required]],
-      job_id: [null, Validators.required],
-      custom_job: [''],
-      has_experience: [false],
-      exp_company_name: [''],
-      exp_position: [''],
-      exp_period: [''],
-      cv_url: ['', Validators.required],
-      profile_image_url: ['', Validators.required],
-      current_stage: [null]
-    });
-  }
+ initForm() {
+  const fullNamePattern = /^(\s*[^\s]+\s+){3,}[^\s]+\s*$/;
+  const phonePattern = /^(07[789]\d{7})$|^(?:\+962|00962)7[789]\d{7}$/;
+
+  this.candidateForm = this.fb.group({
+    id: [null],
+    full_name: ['', [Validators.required, Validators.pattern(fullNamePattern)]],
+    email: ['', [Validators.required, Validators.email]],
+    phone: ['', [Validators.required, Validators.pattern(phonePattern)]],
+    address: ['', Validators.required],
+    university_major: ['', Validators.required],
+    graduation_year: ['', [Validators.required, Validators.min(2010), Validators.max(this.currentYear)]],
+    job_id: [null, Validators.required],
+    custom_job: [''],
+    has_experience: [false],
+    exp_company_name: [''],
+    exp_position: [''],
+    exp_period: [''],
+    cv_url: [''],
+    profile_image_url: [''],
+    current_stage: [1]
+  });
+}
 
   loadInitialData() {
     this.jobService.getJobs().subscribe({
@@ -112,40 +115,47 @@ export class Candidates implements OnInit {
     candidate.showMenu = false;
   }
 
-  submitCandidate() {
-    if (this.candidateForm.invalid) {
-      this.candidateForm.markAllAsTouched();
-      return;
-    }
-    const formData = new FormData();
-    const formValues = this.candidateForm.getRawValue();
-    if (formValues.job_id === 'other') {
-      formValues.job_id = null;
-    }
-    Object.keys(formValues).forEach(key => {
-      if (formValues[key] !== null && formValues[key] !== undefined) {
-        formData.append(key, formValues[key]);
-      }
-    });
-    if (this.selectedCv) formData.append('cvFile', this.selectedCv);
-    if (this.selectedPhoto) formData.append('photoFile', this.selectedPhoto);
-    if (this.photoWasRemoved && !this.selectedPhoto) formData.append('removePhoto', 'true');
-
-    const id = formValues.id;
-    const request = id 
-      ? this.candidateService.updateCandidate(id, formData) 
-      : this.candidateService.addCandidate(formData);
-
-    request.subscribe({
-      next: () => {
-        this.closeModal();
-        this.loadInitialData();
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
+submitCandidate() {
+  if (this.candidateForm.invalid) {
+    this.candidateForm.markAllAsTouched();
+    return;
   }
+
+  const formData = new FormData();
+  const formValues = this.candidateForm.getRawValue();
+
+  if (!formValues.current_stage) {
+    formValues.current_stage = 1;
+  }
+
+  if (formValues.job_id === 'other') {
+    formValues.job_id = null;
+  }
+
+  Object.keys(formValues).forEach(key => {
+    if (formValues[key] !== null && formValues[key] !== undefined) {
+      formData.append(key, formValues[key]);
+    }
+  });
+
+  if (this.selectedCv) formData.append('cvFile', this.selectedCv);
+  if (this.selectedPhoto) formData.append('photoFile', this.selectedPhoto);
+  if (this.photoWasRemoved && !this.selectedPhoto) formData.append('removePhoto', 'true');
+
+  const id = formValues.id;
+
+  const request = id 
+    ? this.candidateService.updateCandidate(id, formData) 
+    : this.candidateService.addCandidate(formData);
+
+  request.subscribe({
+    next: () => {
+      this.closeModal();
+      this.loadInitialData();
+    },
+    error: (err) => console.error(err)
+  });
+}
 
   removeImage() {
     this.previewUrl = null;
@@ -202,4 +212,11 @@ export class Candidates implements OnInit {
     }
   }
   confirmDelete(id: number) { if (confirm('هل أنت متأكد من الحذف؟')) this.candidateService.deleteCandidate(id).subscribe(() => this.loadCandidates()); }
+
+  openCv() {
+    const cvUrl = this.candidateForm.get('cv_url')?.value;
+    if (cvUrl) {
+      window.open(`http://localhost:3000/uploads/${cvUrl}`, '_blank');
+    }
+  }
 }

@@ -10,12 +10,10 @@ import { ChartConfiguration, ChartData } from 'chart.js';
   standalone: false
 })
 export class DashboardRec implements OnInit {
-
   candidates: any[] = [];
   jobs: any[] = [];
   recentCandidates: any[] = [];
   jobSkillsStats: any[] = [];
-
   totalVacancies: number = 0;
   advancedCandidates: number = 0;
   oarRate: string = '0.0';
@@ -32,10 +30,6 @@ export class DashboardRec implements OnInit {
     responsive: true,
     plugins: {
       legend: { position: 'bottom' }
-    },
-    animation: {
-      duration: 2000,
-      easing: 'easeOutQuart'
     }
   };
 
@@ -68,14 +62,13 @@ export class DashboardRec implements OnInit {
 
   calculateDashboardStats() {
     this.advancedCandidates = this.candidates.length;
-
     const allJobTitles = new Set([
       ...this.jobs.map(j => j.job_title),
       ...this.candidates.filter(c => c.custom_job).map(c => c.custom_job)
     ]);
     this.totalVacancies = allJobTitles.size;
 
-    const onboardingCandidates = this.candidates.filter(c => Number(c.current_stage) === 4);
+    const onboardingCandidates = this.candidates.filter(c => c.contract_status && c.contract_status !== '');
     
     const statusCounts = { 
       'تم الإرسال': 0, 
@@ -86,7 +79,7 @@ export class DashboardRec implements OnInit {
     };
 
     onboardingCandidates.forEach(c => {
-      const status = c.contract_status || 'لم يرسل';
+      const status = c.contract_status;
       if (statusCounts.hasOwnProperty(status)) {
         statusCounts[status as keyof typeof statusCounts]++;
       }
@@ -102,14 +95,13 @@ export class DashboardRec implements OnInit {
           statusCounts['مرفوض'],
           statusCounts['تم الانضمام']
         ],
-        backgroundColor: ['#3498db', '#ccc', '#2ecc71', '#e74c3c', '#9b59b6'],
-        hoverOffset: 15
+        backgroundColor: ['#3498db', '#ccc', '#2ecc71', '#e74c3c', '#9b59b6']
       }]
     };
 
     const acceptedCount = statusCounts['مقبول'] + statusCounts['تم الانضمام'];
-    const totalOnboarding = onboardingCandidates.length;
-    this.oarRate = totalOnboarding > 0 ? ((acceptedCount / totalOnboarding) * 100).toFixed(1) : '0.0';
+    this.oarRate = onboardingCandidates.length > 0 ? 
+      ((acceptedCount / onboardingCandidates.length) * 100).toFixed(1) : '0.0';
 
     const skillMap = new Map();
     this.candidates.forEach(c => {
@@ -121,20 +113,11 @@ export class DashboardRec implements OnInit {
       .map(([title, count]) => ({ title, count }))
       .sort((a, b) => b.count - a.count).slice(0, 5);
 
-    this.recentCandidates = [...this.candidates].reverse().slice(0, 7).map(can => {
-      let finalImg = this.DEFAULT_IMAGE;
-      
-      if (can.profile_image_url && String(can.profile_image_url).trim() !== '') {
-        const imageName = String(can.profile_image_url).trim();
-        finalImg = imageName.startsWith('http') ? imageName : this.SERVER_URL + imageName;
-      }
-
-      return {
-        ...can,
-        display_title: this.getDisplayJobTitle(can),
-        profile_image: finalImg 
-      };
-    });
+    this.recentCandidates = [...this.candidates].reverse().slice(0, 7).map(can => ({
+      ...can,
+      display_title: this.getDisplayJobTitle(can),
+      profile_image: can.profile_image_url ? this.SERVER_URL + can.profile_image_url : this.DEFAULT_IMAGE
+    }));
   }
 
   handleImageError(event: any) {

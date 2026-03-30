@@ -1,17 +1,20 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CandidateService } from '../services/candidate/candidate';
 import { JobService } from '../services/job/job-service';
+import { StageService } from '../services/stage/stage';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-onboarding',
   standalone: false,
   templateUrl: './onboarding.html',
-  styleUrl: './onboarding.css',
+  styleUrls: ['./onboarding.css']
 })
 export class Onboarding implements OnInit {
   hiredCandidates: any[] = [];
   jobs: any[] = [];
-  
+  allStages: any[] = [];
+
   contractStatuses = [
     { value: 'لم يرسل', label: 'لم يرسل' },
     { value: 'تم الإرسال', label: 'تم الإرسال' },
@@ -22,7 +25,8 @@ export class Onboarding implements OnInit {
 
   constructor(
     private candidateService: CandidateService,
-    private jobService: JobService, 
+    private jobService: JobService,
+    private stageService: StageService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -31,53 +35,47 @@ export class Onboarding implements OnInit {
   }
 
   loadInitialData() {
-    this.jobService.getJobs().subscribe(jobs => {
-      this.jobs = jobs;
-      this.loadHiredCandidates();
+    forkJoin({
+      stages: this.stageService.getStages(),
+      jobs: this.jobService.getJobs()
+    }).subscribe({
+      next: (result) => {
+        this.allStages = result.stages;
+        this.jobs = result.jobs;
+        this.loadHiredCandidates();
+      }
     });
   }
 
   loadHiredCandidates() {
     this.candidateService.getAllCandidates().subscribe(data => {
+      const finalStageIds = this.allStages
+        .filter(s => s.is_final === 1 || s.is_final === true)
+        .map(s => Number(s.id));
+
       this.hiredCandidates = data
-        .filter((c: any) => c.current_stage == 4)
-        .map((c: any) => ({
+        .filter(c => finalStageIds.includes(Number(c.current_stage)))
+        .map(c => ({
           ...c,
-          contract_status: c.contract_status || 'لم يرسل',
-          display_job: this.getJobTitle(c) 
+          display_job: this.getJobTitle(c)
         }));
       this.cdr.detectChanges();
     });
   }
 
-  getJobTitle(c: any): string {
-    if (c.custom_job) return c.custom_job;
+  getJobTitle(c: any) {
     const job = this.jobs.find(j => j.id == c.job_id);
-    return job ? job.job_title : (c.job_title || '---');
+    return job ? job.job_title : c.custom_job || 'غير محدد';
   }
 
   onStatusChange(candidate: any, newStatus: string) {
-    const date = new Date();
-    const formattedDate = date.getFullYear() + '-' + 
-      ('0' + (date.getMonth() + 1)).slice(-2) + '-' + 
-      ('0' + date.getDate()).slice(-2) + ' ' + 
-      ('0' + date.getHours()).slice(-2) + ':' + 
-      ('0' + date.getMinutes()).slice(-2) + ':' + 
-      ('0' + date.getSeconds()).slice(-2);
-    
-    const updateData = {
-      contract_status: newStatus,
-      contract_sent_date: formattedDate
-    };
-
-    this.candidateService.updateCandidate(candidate.id, updateData).subscribe({
+    this.candidateService.updateCandidate(candidate.id, { contract_status: newStatus }).subscribe({
       next: () => {
         candidate.contract_status = newStatus;
-        candidate.contract_sent_date = formattedDate;
+        if (newStatus === 'تم الانضمام') {
+          this.hiredCandidates = this.hiredCandidates.filter(c => c.id !== candidate.id);
+        }
         this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Update failed:', err);
       }
     });
   }

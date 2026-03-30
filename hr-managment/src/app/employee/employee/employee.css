@@ -1,0 +1,140 @@
+:host {
+  --primary: #7022ba; /* اللون الموف الخاص بـ Solid Soft */
+  --primary-dark: #4c1d95;
+  --bg-color: #f8fafc;
+  --white: #ffffff;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 25px rgba(112, 34, 186, 0.1);
+}
+
+.admin-layout {
+  padding: clamp(15px, 3vw, 40px);
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Header Luxury Style */
+.glass-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 40px;
+  border-radius: 24px;
+  color: white;
+  margin-bottom: 35px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-header::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+}
+
+.title-section h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.title-section p {
+  opacity: 0.9;
+  font-size: 15px;
+}
+
+/* Table Container */
+.card-panel-white {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-sm);
+}
+
+.premium-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px; /* تباعد بين الأسطر ليعطي مظهر البطاقات */
+}
+
+.premium-table th {
+  padding: 15px 20px;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.premium-table tbody tr {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.premium-table tbody tr:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+}
+
+.premium-table td {
+  padding: 15px 20px;
+  background: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* تدوير الزوايا لأول وآخر خلية في الصف */
+.premium-table td:first-child { border-radius: 12px 0 0 12px; border-right: 1px solid #f1f5f9; }
+.premium-table td:last-child { border-radius: 0 12px 12px 0; border-left: 1px solid #f1f5f9; }
+
+/* User Info Cell */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.table-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid var(--bg-color);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-cell span {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-size: 15px;
+}
+
+/* Badge Styles */
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.status-joined {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-muted);
+}

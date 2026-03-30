@@ -100,10 +100,15 @@
   border-right: none !important;
 }
 
-.active-link {
+.active-link, .active-sub {
   background-color: #333 !important;
   color: #fff !important;
   border-right: 4px solid #007bff !important;
+}
+
+.active-sub {
+  border-right: 2px solid #007bff !important;
+  background-color: #222 !important;
 }
 
 .app-sidebar ul li a i {

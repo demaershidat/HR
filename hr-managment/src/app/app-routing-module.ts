@@ -18,6 +18,11 @@ const routes: Routes = [
     loadChildren: () => import('./recruitment/module/module-module').then(m => m.ModuleModule)
   },
   {
+    path: 'employees',
+    canActivate: [guardGuard],
+    loadChildren: () => import('./employee/module/module/module-module').then(m => m.ModuleModule)
+  },
+  {
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full'

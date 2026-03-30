@@ -42,13 +42,27 @@
                 {{ isJobActive(job) ? 'نشطة' : 'منتهية' }}
               </span>
             </td>
-            <td class="actions-cell">
-              <div class="actions-wrapper">
-                <button class="btn-apply-action" (click)="openApplyModal(job)" title="تقدم"><i class="fas fa-paper-plane"></i></button>
-                <button class="btn-edit-action" (click)="editJob(job)" title="تعديل"><i class="fas fa-edit"></i></button>
-                <button class="btn-delete-action" (click)="onDeleteJob(job.id)" title="حذف"><i class="fas fa-trash"></i></button>
-              </div>
-            </td>
+<td class="actions-cell">
+  <div class="dropdown-actions">
+    <button class="btn-more-trigger" type="button" (click)="toggleDropdown(job.id)">
+      <i class="fas fa-ellipsis-v"></i>
+    </button>
+
+    <div class="dropdown-menu-content shadow-sm" *ngIf="activeDropdown === job.id">
+      <button (click)="openApplyModal(job)">
+        <i class="fas fa-paper-plane"></i> تقدم للوظيفة
+      </button>
+
+      <button (click)="editJob(job)">
+        <i class="fas fa-edit"></i> تعديل البيانات
+      </button>
+
+      <button class="danger-item" (click)="onDeleteJob(job.id)">
+        <i class="fas fa-trash"></i> حذف الوظيفة
+      </button>
+    </div>
+  </div>
+</td>
           </tr>
         </tbody>
       </table>
@@ -66,7 +80,7 @@
           <ng-container *ngIf="isModalOpen">{{ currentEditId ? 'تعديل وظيفة' : 'إضافة وظيفة جديدة' }}</ng-container>
           <ng-container *ngIf="isApplyModalOpen">التقدم لوظيفة: {{selectedJob?.job_title}}</ng-container>
         </h3>
-        <button class="close-btn" (click)="isModalOpen ? closeModal() : closeApplyModal()">×</button>
+
       </div>
 
       <div class="modal-body-scroll">

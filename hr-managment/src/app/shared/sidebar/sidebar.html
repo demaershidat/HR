@@ -31,7 +31,24 @@
         </ul>
       </li>
 
-      <li><a routerLink="/employees" routerLinkActive="active-link"><i class="fas fa-users"></i> <span>الموظفين</span></a></li>
+      <li class="has-submenu">
+        <a (click)="toggleEmployees()" class="parent-link" [class.active-parent]="isEmployeesOpen">
+          <div class="link-main">
+            <i class="fas fa-users"></i>
+            <span>الموظفين</span>
+          </div>
+          <i class="fas fa-chevron-left arrow" [class.rotate]="isEmployeesOpen"></i>
+        </a>
+        
+        <ul class="submenu" [class.show]="isEmployeesOpen">
+          <li><a routerLink="/employees/dashboardEmp" routerLinkActive="active-sub">لوحة التحكم</a></li>
+          <li><a routerLink="/employees/employee" routerLinkActive="active-sub">إدارة الموظفين</a></li>
+          <li><a routerLink="/employees/organization-chart" routerLinkActive="active-sub">الهيكل التنظيمي</a></li>
+          <li><a routerLink="/employees/fine" routerLinkActive="active-sub">المخالفات</a></li>
+          <li><a routerLink="/employees/bonus-point" routerLinkActive="active-sub">نقاط المكافأة</a></li>
+        </ul>
+      </li>
+
       <li><a routerLink="/salaries" routerLinkActive="active-link"><i class="fas fa-money-bill-wave"></i> <span>الرواتب</span></a></li>
       <li><a routerLink="/attendance" routerLinkActive="active-link"><i class="fas fa-calendar-check"></i> <span>الحضور</span></a></li>
       <li><a routerLink="/leaves" routerLinkActive="active-link"><i class="fas fa-calendar-alt"></i> <span>الإجازات</span></a></li>
