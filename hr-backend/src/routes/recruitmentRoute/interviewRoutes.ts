@@ -1,5 +1,5 @@
 import express from 'express';
-import * as interviewCtrl from '../controller/interviewsController';
+import * as interviewCtrl from '../../controller/recruitmentController/interviewsController';
 
 const router = express.Router();
 

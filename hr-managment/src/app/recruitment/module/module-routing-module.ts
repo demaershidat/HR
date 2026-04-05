@@ -7,6 +7,8 @@ import { Interviews } from '../interviews/interviews';
 import { Onboarding } from '../onboarding/onboarding';
 import { DashboardRec } from '../dashboard-rec/dashboard-rec';
 import { guardGuard } from '../../auth/guard/guard-guard';
+import { JobResolver } from '../resolvers/jobs.resolver';
+import { CandidatesResolver } from '../resolvers/candidates.resolver';
 
 const routes: Routes = [
   {
@@ -14,8 +16,19 @@ const routes: Routes = [
     canActivateChild: [guardGuard],
     children: [
       { path: 'dashboardRec', component: DashboardRec },
-      { path: 'jobManagment', component: JobManagment },
-      { path: 'candidates', component: Candidates },
+      { 
+        path: 'jobManagment', 
+        component: JobManagment,
+        resolve: { jobsData: JobResolver }
+      },
+      { 
+        path: 'candidates', 
+        component: Candidates, 
+        resolve: { 
+          candidatesData: CandidatesResolver,
+          jobsData: JobResolver 
+        } 
+      },
       { path: 'stages', component: Stages },
       { path: 'interviews', component: Interviews },
       { path: 'onboarding', component: Onboarding },

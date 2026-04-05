@@ -210,3 +210,13 @@ html, body {
   min-height: 100vh;
   background-color: #ffffff;
 }
+
+[ng-reflect-show-header-footer="false"] app-sidebar,
+[ng-reflect-show-header-footer="false"] app-header {
+    display: none !important;
+}
+
+.content-wrapper.no-sidebar {
+    margin-right: 0 !important;
+    transition: none; 
+}

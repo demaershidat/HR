@@ -2,38 +2,80 @@
   <header class="glass-header">
     <div class="title-section">
       <h1>سجل الموظفين</h1>
-      <p>قائمة الموظفين الذين انضموا رسمياً لعائلة Solid Soft</p>
+      <p>إدارة بيانات الموظفين الحاليين في النظام</p>
+    </div>
+
+    <div class="header-controls">
+      <div class="count-pill">إجمالي الموظفين: {{ employees.length }}</div>
     </div>
   </header>
 
-  <div class="employee-table-container card-panel-white">
-    <table class="premium-table" *ngIf="!loading && employees.length > 0">
-      <thead>
-        <tr>
-          <th>الموظف</th>
-          <th>المسمى الوظيفي</th>
-          <th>تاريخ الانضمام</th>
-          <th>الحالة</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let emp of employees">
-          <td>
-            <div class="user-cell">
-              <img [src]="emp.profile_image_url ? 'http://localhost:3000/uploads/' + emp.profile_image_url : 'assets/unknown.png'" 
-                   (error)="$any($event.target).src = 'assets/unknown.png'" class="table-avatar">
-              <span>{{ emp.full_name }}</span>
-            </div>
-          </td>
-          <td>{{ emp.display_job }}</td>
-          <td>{{ emp.updated_at | date:'yyyy-MM-dd' }}</td>
-          <td><span class="status-badge status-joined">على رأس العمل</span></td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <div class="empty-state" *ngIf="!loading && employees.length === 0">
-      <p>لا يوجد موظفين حالياً في النظام.</p>
+  <div class="controls-group">
+    <button class="btn-add" (click)="openAddModal()">
+      <i class="fas fa-plus"></i> موظف جديد
+    </button>
+
+    <div class="search-wrapper">
+      <i class="fas fa-search"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchText" 
+        placeholder="بحث عن موظف..." 
+        class="premium-input">
     </div>
+  </div>
+
+  <div class="candidates-grid" *ngIf="filteredEmployees.length > 0">
+    <div class="candidate-card" *ngFor="let emp of filteredEmployees">
+      
+      <div class="card-options-container">
+        <button class="options-btn" (click)="toggleMenu(emp)">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+        
+        <div class="options-menu" *ngIf="emp.showMenu">
+          <button class="menu-item" (click)="viewDetails(emp)">
+            <i class="far fa-eye"></i>
+            <span>عرض التفاصيل</span>
+          </button>
+          <button class="menu-item" (click)="editEmployee(emp)">
+            <i class="far fa-edit"></i>
+            <span>تعديل البيانات</span>
+          </button>
+          <button class="menu-item delete-item" (click)="deleteEmp(emp.id)">
+            <i class="far fa-trash-alt"></i>
+            <span>حذف الموظف</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div class="profile-img-wrapper">
+          <img [src]="emp.profile_image_url ? 'http://localhost:3000/uploads/' + emp.profile_image_url : 'assets/unknown.png'" 
+               (error)="handleImageError($event)" alt="profile">
+        </div>
+
+        <h4 class="emp-name">{{ emp.full_name }}</h4>
+        
+        <div class="info-row">
+          <i class="fas fa-envelope"></i>
+          <span>{{ emp.email }}</span>
+        </div>
+        
+        <div class="info-row">
+          <i class="fas fa-phone"></i>
+          <span>{{ emp.phone || '0776666666' }}</span>
+        </div>
+
+        <div class="job-badge">
+          {{ emp.job_title }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredEmployees.length === 0">
+    <i class="fas fa-users-slash"></i>
+    <p>لا يوجد موظفون يطابقون البحث.</p>
   </div>
 </div>

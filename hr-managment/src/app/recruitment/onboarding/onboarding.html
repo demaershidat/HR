@@ -1,60 +1,54 @@
 <div class="admin-layout" dir="rtl">
-  <header class="main-header">
-    <div class="header-content">
-      <div class="title-group">
-        <h1>توجيه الموظف الجديد</h1>
-        <p>إدارة العقود ومتابعة انضمام الموظفين الجدد لشركة Solid Soft</p>
-      </div>
+  <header class="glass-header">
+    <div class="title-section">
+      <h1>مرحلة الانضمام</h1>
+      <p>إدارة المرشحين المقبولين وإتمام إجراءات التعيين</p>
     </div>
   </header>
 
-  <div class="onboarding-grid">
-    <div class="employee-card" *ngFor="let c of hiredCandidates">
-      <div class="card-header">
-        <div class="user-info">
-          <img [src]="c.profile_image_url ? 'http://localhost:3000/uploads/' + c.profile_image_url : 'assets/unknown.png'" 
-               (error)="handleImageError($event)" class="table-avatar">
-          <div>
-            <span class="user-name">{{ c.full_name }}</span>
-            <span class="job-badge">{{ c.display_job }}</span>
+  <div class="stages-vertical-list">
+    <div class="stage-section">
+      <div class="stage-card-header">
+        <div class="stage-info">
+          <h3>المرشحون المقبولون</h3>
+          <span class="count-pill">{{ hiredCandidates.length }} مرشح</span>
+        </div>
+      </div>
+
+      <div class="candidates-scroll-area">
+        <div class="candidate-card" *ngFor="let candidate of hiredCandidates">
+          <div class="card-top">
+            <img [src]="candidate.profile_image_url ? 'http://localhost:3000/uploads/' + candidate.profile_image_url : 'assets/unknown.png'" 
+                 (error)="handleImageError($event)">
+            <div class="candidate-meta">
+              <h4>{{ candidate.full_name }}</h4>
+              <span class="job-tag">{{ candidate.display_job }}</span>
+            </div>
+          </div>
+
+          <div class="card-bottom">
+            <div class="info-row">
+              <i class="fas fa-envelope"></i>
+              <span>{{ candidate.email }}</span>
+            </div>
+            
+            <div class="status-action-group">
+              <label class="status-label">حالة العقد</label>
+              <select class="stage-select" 
+                      [(ngModel)]="candidate.contract_status" 
+                      (change)="onStatusChange(candidate, candidate.contract_status)">
+                <option *ngFor="let status of contractStatuses" [value]="status.value">
+                  {{ status.label }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="card-body">
-        <div class="info-row">
-          <i class="fas fa-calendar-check"></i>
-          <span>تاريخ الإجراء: {{ c.contract_sent_date ? (c.contract_sent_date | date:'yyyy-MM-dd HH:mm') : '---' }}</span>
-        </div>
-        
-        <div class="info-row">
-          <i class="fas fa-file-contract"></i>
-          <span>حالة العقد الحالي: </span>
-          <span class="status-badge" [ngClass]="{
-            'status-pending': c.contract_status === 'لم يرسل',
-            'status-sent': c.contract_status === 'تم الإرسال',
-            'status-active': c.contract_status === 'مقبول',
-            'status-expired': c.contract_status === 'مرفوض',
-            'status-joined': c.contract_status === 'تم الانضمام'
-          }">
-            {{ c.contract_status }}
-          </span>
+        <div class="empty-state-mini" *ngIf="hiredCandidates.length === 0">
+          <p>لا يوجد مرشحين في مرحلة الانضمام حالياً.</p>
         </div>
       </div>
-
-      <div class="actions-section">
-        <label class="status-label">تحديث حالة العقد</label>
-        <select class="status-dropdown" [ngModel]="c.contract_status" (ngModelChange)="onStatusChange(c, $event)">
-          <option *ngFor="let status of contractStatuses" [value]="status.value">
-            {{ status.label }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <div class="empty-state" *ngIf="hiredCandidates.length === 0">
-      <div style="font-size: 50px; margin-bottom: 15px;">📂</div>
-      <p>لا يوجد موظفين جدد في هذه القائمة حالياً</p>
     </div>
   </div>
 </div>

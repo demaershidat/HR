@@ -9,7 +9,7 @@
 .admin-layout { padding: 30px; background: #f8fafc; min-height: 100vh; direction: rtl; }
 
 .glass-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.title-section h1 { font-size: 24px; font-weight: 800; color: var(--text-dark); margin: 0; }
+.title-section h1 { font-size: 1.75rem; color: var(--text-main); font-weight: 800; margin: 0; }
 
 .header-controls { display: flex; gap: 15px; }
 .premium-input { height: 42px; border-radius: 12px; border: 1px solid var(--border-color); padding: 0 35px 0 15px; width: 220px; outline: none; }
@@ -51,7 +51,7 @@
 .btn-edit { background: var(--primary-light); color: var(--primary); }
 .btn-delete { background: #fee2e2; color: #ef4444; }
 
-.blur-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.05); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.blur-overlay { position: fixed; inset: 0; background: rgba(243, 235, 255, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; }
 .compact-modal { background: white; width: 420px; border-radius: 25px; padding: 25px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
 .modal-title-mini { text-align: center; color: var(--primary); font-weight: 800; margin-bottom: 20px; }
 .modern-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px; outline: none; }

@@ -10,11 +10,12 @@ const morgan_1 = __importDefault(require("morgan"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-const jobRoute_1 = __importDefault(require("./routes/jobRoute"));
-const candidateRoute_1 = __importDefault(require("./routes/candidateRoute"));
-const authRoute_1 = __importDefault(require("./routes/authRoute"));
-const interviewRoutes_1 = __importDefault(require("./routes/interviewRoutes"));
-const stageRoute_1 = __importDefault(require("./routes/stageRoute"));
+const jobRoute_1 = __importDefault(require("./routes/recruitmentRoute/jobRoute"));
+const candidateRoute_1 = __importDefault(require("./routes/recruitmentRoute/candidateRoute"));
+const authRoute_1 = __importDefault(require("./routes/recruitmentRoute/authRoute"));
+const interviewRoutes_1 = __importDefault(require("./routes/recruitmentRoute/interviewRoutes"));
+const stageRoute_1 = __importDefault(require("./routes/recruitmentRoute/stageRoute"));
+const employeeRoute_1 = __importDefault(require("./routes/employeeRoute/employeeRoute"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const uploadsPath = path_1.default.join(process.cwd(), 'uploads');
@@ -30,6 +31,14 @@ app.use('/candidates', candidateRoute_1.default);
 app.use('/login', authRoute_1.default);
 app.use('/interviews', interviewRoutes_1.default);
 app.use('/stages', stageRoute_1.default);
+app.use('/employees', employeeRoute_1.default);
+app.use((req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+});
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong!', error: err.message });
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`SERVER RUNNING ON PORT ${PORT}`);

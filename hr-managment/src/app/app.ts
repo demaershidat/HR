@@ -8,17 +8,17 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class App implements OnInit {
-   showHeaderFooter: boolean = true;
+  showHeaderFooter: boolean = false; 
 
   constructor(private router: Router) {}
 
   ngOnInit() {
     this.router.events.subscribe(() => {
       const currentRoute = this.router.url;
-      if (currentRoute.includes('/auth/login')) {
-        this.showHeaderFooter = false;  
+      if (currentRoute.includes('/auth/login') || currentRoute === '/') {
+        this.showHeaderFooter = false;
       } else {
-        this.showHeaderFooter = true;  
+        this.showHeaderFooter = true;
       }
     });
   }

@@ -3,6 +3,7 @@ import { CandidateService } from '../services/candidate/candidate';
 import { JobService } from '../services/job/job-service';
 import { StageService } from '../services/stage/stage';
 import { forkJoin } from 'rxjs';
+import { EmployeeService } from '../../employee/services/employee/employee-service';
 
 @Component({
   selector: 'app-onboarding',
@@ -27,6 +28,7 @@ export class Onboarding implements OnInit {
     private candidateService: CandidateService,
     private jobService: JobService,
     private stageService: StageService,
+    private employeeService: EmployeeService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -50,13 +52,14 @@ export class Onboarding implements OnInit {
   loadHiredCandidates() {
     this.candidateService.getAllCandidates().subscribe(data => {
       const finalStageIds = this.allStages
-        .filter(s => s.is_final === 1 || s.is_final === true)
+        .filter(s => Number(s.is_final) === 1 || s.is_final === true)
         .map(s => Number(s.id));
 
       this.hiredCandidates = data
-        .filter(c => finalStageIds.includes(Number(c.current_stage)))
+        .filter(c => finalStageIds.includes(Number(c.current_stage)) && c.contract_status !== 'تم الانضمام')
         .map(c => ({
           ...c,
+          contract_status: c.contract_status || 'لم يرسل',
           display_job: this.getJobTitle(c)
         }));
       this.cdr.detectChanges();
@@ -64,23 +67,37 @@ export class Onboarding implements OnInit {
   }
 
   getJobTitle(c: any) {
-    const job = this.jobs.find(j => j.id == c.job_id);
-    return job ? job.job_title : c.custom_job || 'غير محدد';
+    if (c.custom_job && c.custom_job.trim() !== '') return c.custom_job;
+    const job = this.jobs.find(j => Number(j.id) === Number(c.job_id));
+    return job ? job.job_title : 'غير محدد';
   }
 
   onStatusChange(candidate: any, newStatus: string) {
+    candidate.contract_status = newStatus;
     this.candidateService.updateCandidate(candidate.id, { contract_status: newStatus }).subscribe({
       next: () => {
-        candidate.contract_status = newStatus;
         if (newStatus === 'تم الانضمام') {
-          this.hiredCandidates = this.hiredCandidates.filter(c => c.id !== candidate.id);
+          const newEmployee = {
+            candidate_id: candidate.id,
+            job_id: candidate.job_id || null,
+            custom_job: candidate.custom_job || null,
+            full_name: candidate.full_name,
+            email: candidate.email,
+            phone: candidate.phone || null,
+            salary: candidate.expected_salary || null,
+            profile_image_url: candidate.profile_image_url || null
+          };
+          this.employeeService.addEmployee(newEmployee).subscribe({
+            next: () => {
+              this.hiredCandidates = this.hiredCandidates.filter(c => c.id !== candidate.id);
+              this.cdr.detectChanges();
+            }
+          });
         }
         this.cdr.detectChanges();
       }
     });
   }
 
-  handleImageError(event: any) {
-    event.target.src = 'assets/unknown.png';
-  }
+  handleImageError(event: any) { (event.target as HTMLImageElement).src = 'assets/unknown.png'; }
 }

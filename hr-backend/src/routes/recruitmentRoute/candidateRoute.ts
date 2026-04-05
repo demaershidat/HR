@@ -8,7 +8,7 @@ import {
     updateCandidate, 
     deleteCandidate, 
     deleteBulkCandidates 
-} from '../controller/candidateController';
+} from '../../controller/recruitmentController/candidateController';
 
 const router = express.Router();
 
@@ -18,9 +18,7 @@ if (!fs.existsSync(uploadPath)) {
 }
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadPath);
-    },
+    destination: (req, file, cb) => cb(null, uploadPath),
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + path.extname(file.originalname);
         cb(null, uniqueSuffix);
@@ -28,7 +26,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
 const multiUpload = upload.fields([
     { name: 'cvFile', maxCount: 1 }, 
     { name: 'photoFile', maxCount: 1 }

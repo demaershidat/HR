@@ -10,14 +10,13 @@ import { CandidateService } from '../services/candidate/candidate';
   standalone: false
 })
 export class JobManagment implements OnInit {
-
   activeDropdown: number | null = null;
-
   jobForm!: FormGroup;
   applyForm!: FormGroup;
   isModalOpen = false;
   isApplyModalOpen = false;
   jobs: any[] = [];
+  filteredJobs: any[] = [];
   selectedJob: any = null;
   selectedJobIds: number[] = [];
   previewUrl: string | null = null;
@@ -26,6 +25,7 @@ export class JobManagment implements OnInit {
   currentEditId: number | null = null;
   formSubmitted = false;
   applySubmitted = false;
+  searchTerm: string = '';
 
   jordanGovernorates = ['عمان', 'إربد', 'الزرقاء', 'المفرق', 'الكرك', 'معان', 'الطفيلة', 'مادبا', 'جرش', 'عجلون', 'العقبة', 'البلقاء'];
 
@@ -41,15 +41,14 @@ export class JobManagment implements OnInit {
     this.loadJobs();
   }
 
-toggleDropdown(id: number) {
+ toggleDropdown(event: Event, id: number) {
+  event.stopPropagation(); 
   this.activeDropdown = this.activeDropdown === id ? null : id;
 }
 
-@HostListener('document:click', ['$event'])
-closeDropdownOutside(event: any) {
-  if (!event.target.closest('.dropdown-actions')) {
-    this.activeDropdown = null;
-  }
+@HostListener('document:click')
+closeDropdownOutside() {
+  this.activeDropdown = null;
 }
 
   initForms() {
@@ -90,16 +89,20 @@ closeDropdownOutside(event: any) {
     if (control?.errors) {
       if (control.errors['required']) return 'هذا الحقل مطلوب';
       if (control.errors['email']) return 'البريد الإلكتروني غير صحيح';
-      if (control.errors['pattern'] && controlName === 'fullName') return 'يجب إدخال الاسم الرباعي على الأقل';
+      if (control.errors['pattern'] && controlName === 'fullName') return 'يجب إدخال الاسم الرباعي كاملاً';
       if (control.errors['pattern'] && controlName === 'phone') return 'رقم الهاتف غير صحيح';
-      if (control.errors['min'] || control.errors['max']) return `السنة بين 2010 و ${this.currentYear}`;
+      if (control.errors['min'] || control.errors['max']) return `سنة غير صحيحة (2010 - ${this.currentYear})`;
     }
     return '';
   }
 
   loadJobs() {
     this.jobService.getJobs().subscribe({
-      next: (data) => { this.jobs = data; this.cdr.detectChanges(); },
+      next: (data) => { 
+        this.jobs = data; 
+        this.filteredJobs = data; 
+        this.cdr.detectChanges(); 
+      },
       error: (err) => console.error(err)
     });
   }
@@ -153,19 +156,13 @@ closeDropdownOutside(event: any) {
     this.isApplyModalOpen = true;
     this.applySubmitted = false;
     this.previewUrl = null;
-    this.applyForm.reset({ hasExperience: false, address: '' });
+    this.applyForm.reset({ hasExperience: false, address: '', graduationYear: '' });
     
-    if (job.require_cv) {
-      this.applyForm.get('cvFile')?.setValidators(Validators.required);
-    } else {
-      this.applyForm.get('cvFile')?.clearValidators();
-    }
+    if (job.require_cv) this.applyForm.get('cvFile')?.setValidators(Validators.required);
+    else this.applyForm.get('cvFile')?.clearValidators();
     
-    if (job.require_profile_image) {
-      this.applyForm.get('photoFile')?.setValidators(Validators.required);
-    } else {
-      this.applyForm.get('photoFile')?.clearValidators();
-    }
+    if (job.require_profile_image) this.applyForm.get('photoFile')?.setValidators(Validators.required);
+    else this.applyForm.get('photoFile')?.clearValidators();
     
     this.applyForm.get('cvFile')?.updateValueAndValidity();
     this.applyForm.get('photoFile')?.updateValueAndValidity();
@@ -185,7 +182,6 @@ closeDropdownOutside(event: any) {
         return;
       }
       this.applyForm.patchValue({ cvFile: file });
-      this.applyForm.get('cvFile')?.updateValueAndValidity();
     } else if (type === 'photo') {
       this.applyForm.patchValue({ photoFile: file });
       const reader = new FileReader();
@@ -209,7 +205,10 @@ closeDropdownOutside(event: any) {
 
   onApplySubmit() {
     this.applySubmitted = true;
-    if (this.applyForm.invalid) { this.applyForm.markAllAsTouched(); return; }
+    if (this.applyForm.invalid) { 
+      this.applyForm.markAllAsTouched(); 
+      return; 
+    }
     
     const formData = new FormData();
     const val = this.applyForm.value;
@@ -258,5 +257,17 @@ closeDropdownOutside(event: any) {
   isJobActive(job: any): boolean {
     if (!job.expiry_date) return true;
     return new Date() <= new Date(job.expiry_date);
+  }
+
+  onSearch(event: any) {
+    this.searchTerm = event.target.value.toLowerCase().trim();
+    if (!this.searchTerm) {
+      this.filteredJobs = [...this.jobs];
+    } else {
+      this.filteredJobs = this.jobs.filter(job => 
+        job.job_title?.toLowerCase().includes(this.searchTerm) || 
+        job.company_name?.toLowerCase().includes(this.searchTerm)
+      );
+    }
   }
 }

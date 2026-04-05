@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { CandidateService } from '../services/candidate/candidate';
 import { JobService } from '../services/job/job-service';
 
@@ -21,6 +22,8 @@ export class Candidates implements OnInit {
   previewUrl: string | null = null;
   photoWasRemoved = false;
   currentYear = new Date().getFullYear();
+  searchText: string = '';
+  selectedJobFilter: any = 'all';
 
   jordanGovernorates = ['عمان', 'إربد', 'الزرقاء', 'المفرق', 'الكرك', 'معان', 'الطفيلة', 'مادبا', 'جرش', 'عجلون', 'العقبة', 'البلقاء'];
 
@@ -28,58 +31,68 @@ export class Candidates implements OnInit {
     private fb: FormBuilder, 
     private candidateService: CandidateService, 
     private jobService: JobService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.initForm();
-    this.loadInitialData();
-  }
+  this.initForm();
+  this.route.data.subscribe({
+    next: (data) => {
+      this.jobs = data['jobsData'] || [];
+      const rawCandidates = data['candidatesData'] || [];
+      
+      this.joinedCount = rawCandidates.filter((c: any) => c.contract_status === 'تم الانضمام').length;
 
- initForm() {
-  const fullNamePattern = /^(\s*[^\s]+\s+){3,}[^\s]+\s*$/;
-  const phonePattern = /^(07[789]\d{7})$|^(?:\+962|00962)7[789]\d{7}$/;
-
-  this.candidateForm = this.fb.group({
-    id: [null],
-    full_name: ['', [Validators.required, Validators.pattern(fullNamePattern)]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.pattern(phonePattern)]],
-    address: ['', Validators.required],
-    university_major: ['', Validators.required],
-    graduation_year: ['', [Validators.required, Validators.min(2010), Validators.max(this.currentYear)]],
-    job_id: [null, Validators.required],
-    custom_job: [''],
-    has_experience: [false],
-    exp_company_name: [''],
-    exp_position: [''],
-    exp_period: [''],
-    cv_url: [''],
-    profile_image_url: [''],
-    current_stage: [1]
+      this.candidates = rawCandidates
+        .filter((c: any) => c.contract_status !== 'تم الانضمام')
+        .map((c: any) => ({ ...c, showMenu: false }));
+        
+      this.cdr.detectChanges();
+    }
   });
 }
 
-  loadInitialData() {
-    this.jobService.getJobs().subscribe({
-      next: (data) => {
-        this.jobs = data;
-        this.loadCandidates();
-      }
+  initForm() {
+    const fullNamePattern = /^(\s*[^\s]+\s+){3,}[^\s]+\s*$/;
+    const phonePattern = /^(07[789]\d{7})$|^(?:\+962|00962)7[789]\d{7}$/;
+
+    this.candidateForm = this.fb.group({
+      id: [null],
+      full_name: ['', [Validators.required, Validators.pattern(fullNamePattern)]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern(phonePattern)]],
+      address: ['', Validators.required],
+      university_major: ['', Validators.required],
+      graduation_year: ['', [Validators.required, Validators.min(2010), Validators.max(this.currentYear)]],
+      job_id: [null, Validators.required],
+      custom_job: [''],
+      has_experience: [false],
+      exp_company_name: [''],
+      exp_position: [''],
+      exp_period: [''],
+      cv_url: [''],
+      profile_image_url: [''],
+      current_stage: [1]
     });
   }
 
-  loadCandidates() {
-    this.candidateService.getAllCandidates().subscribe({
-      next: (data) => {
-        this.candidates = data.map(c => ({ ...c, showMenu: false }));
-        this.cdr.detectChanges();
-      }
-    });
-  }
+loadCandidates() {
+  this.candidateService.getAllCandidates().subscribe({
+    next: (data) => {
+      this.joinedCount = data.filter(c => c.contract_status === 'تم Enضمام').length;
+      this.candidates = data
+        .filter(c => c.contract_status !== 'تم الانضمام')
+        .map(c => ({ ...c, showMenu: false }));
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   getDisplayJobTitle(c: any): string {
-    if (c.custom_job) return c.custom_job;
+    if (c.custom_job && c.custom_job.trim() !== '') {
+      return c.custom_job;
+    }
     const job = this.jobs.find(j => j.id == c.job_id);
     return job ? job.job_title : (c.job_title || 'لم يحدد');
   }
@@ -95,7 +108,7 @@ export class Candidates implements OnInit {
     this.photoWasRemoved = false;
     this.showAddModal = true;
     this.candidateForm.enable();
-    this.candidateForm.reset({ has_experience: false, address: '', job_id: null });
+    this.candidateForm.reset({ has_experience: false, address: '', job_id: null, current_stage: 1 });
     this.previewUrl = null;
     this.selectedCv = null;
     this.selectedPhoto = null;
@@ -115,47 +128,42 @@ export class Candidates implements OnInit {
     candidate.showMenu = false;
   }
 
-submitCandidate() {
-  if (this.candidateForm.invalid) {
-    this.candidateForm.markAllAsTouched();
-    return;
-  }
-
-  const formData = new FormData();
-  const formValues = this.candidateForm.getRawValue();
-
-  if (!formValues.current_stage) {
-    formValues.current_stage = 1;
-  }
-
-  if (formValues.job_id === 'other') {
-    formValues.job_id = null;
-  }
-
-  Object.keys(formValues).forEach(key => {
-    if (formValues[key] !== null && formValues[key] !== undefined) {
-      formData.append(key, formValues[key]);
+  submitCandidate() {
+    if (this.candidateForm.invalid) {
+      this.candidateForm.markAllAsTouched();
+      return;
     }
-  });
 
-  if (this.selectedCv) formData.append('cvFile', this.selectedCv);
-  if (this.selectedPhoto) formData.append('photoFile', this.selectedPhoto);
-  if (this.photoWasRemoved && !this.selectedPhoto) formData.append('removePhoto', 'true');
+    const formData = new FormData();
+    const formValues = this.candidateForm.getRawValue();
 
-  const id = formValues.id;
+    Object.keys(formValues).forEach(key => {
+      if (formValues[key] !== null && formValues[key] !== undefined) {
+        formData.append(key, formValues[key]);
+      }
+    });
 
-  const request = id 
-    ? this.candidateService.updateCandidate(id, formData) 
-    : this.candidateService.addCandidate(formData);
+    if (this.selectedCv) formData.append('cvFile', this.selectedCv);
+    if (this.selectedPhoto) formData.append('photoFile', this.selectedPhoto);
+    if (this.photoWasRemoved && !this.selectedPhoto) formData.append('removePhoto', 'true');
 
-  request.subscribe({
-    next: () => {
-      this.closeModal();
-      this.loadInitialData();
-    },
-    error: (err) => console.error(err)
-  });
-}
+    const id = formValues.id;
+    const request = id 
+      ? this.candidateService.updateCandidate(id, formData) 
+      : this.candidateService.addCandidate(formData);
+
+    request.subscribe({
+      next: () => {
+        this.closeModal();
+        this.loadCandidates();
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  onJobSelect(event: any) {
+    this.isCustomJob = event.target.value === 'other';
+  }
 
   removeImage() {
     this.previewUrl = null;
@@ -204,14 +212,17 @@ submitCandidate() {
   }
 
   handleImageError(event: any) { event.target.src = 'assets/unknown.png'; }
-  onJobSelect(event: any) { this.isCustomJob = event.target.value === 'other'; }
+  
   onFileSelect(event: any) { 
     if (event.target.files.length > 0) {
       this.selectedCv = event.target.files[0];
       this.candidateForm.patchValue({ cv_url: this.selectedCv?.name });
     }
   }
-  confirmDelete(id: number) { if (confirm('هل أنت متأكد من الحذف؟')) this.candidateService.deleteCandidate(id).subscribe(() => this.loadCandidates()); }
+
+  confirmDelete(id: number) { 
+    if (confirm('هل أنت متأكد من الحذف؟')) this.candidateService.deleteCandidate(id).subscribe(() => this.loadCandidates()); 
+  }
 
   openCv() {
     const cvUrl = this.candidateForm.get('cv_url')?.value;
@@ -219,4 +230,14 @@ submitCandidate() {
       window.open(`http://localhost:3000/uploads/${cvUrl}`, '_blank');
     }
   }
+
+  get filteredCandidates() {
+    return this.candidates.filter(c => {
+      const matchesSearch = c.full_name.toLowerCase().includes(this.searchText.toLowerCase()) || 
+                            c.email.toLowerCase().includes(this.searchText.toLowerCase());
+      const matchesJob = this.selectedJobFilter === 'all' || c.job_id == this.selectedJobFilter;
+      return matchesSearch && matchesJob;
+    });
+  }
+  joinedCount: number = 0;
 }
