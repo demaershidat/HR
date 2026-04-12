@@ -41,15 +41,15 @@ export class JobManagment implements OnInit {
     this.loadJobs();
   }
 
- toggleDropdown(event: Event, id: number) {
-  event.stopPropagation(); 
-  this.activeDropdown = this.activeDropdown === id ? null : id;
-}
+  toggleDropdown(event: Event, id: number) {
+    event.stopPropagation(); 
+    this.activeDropdown = this.activeDropdown === id ? null : id;
+  }
 
-@HostListener('document:click')
-closeDropdownOutside() {
-  this.activeDropdown = null;
-}
+  @HostListener('document:click')
+  closeDropdownOutside() {
+    this.activeDropdown = null;
+  }
 
   initForms() {
     this.jobForm = this.fb.group({
@@ -67,6 +67,8 @@ closeDropdownOutside() {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^07[789]\d{7}$/)]],
       address: ['', Validators.required],
+      birthDate: ['', Validators.required],
+      age: ['', [Validators.required, Validators.min(18), Validators.max(60)]],
       major: ['', Validators.required],
       graduationYear: ['', [Validators.required, Validators.min(2010), Validators.max(this.currentYear)]],
       hasExperience: [false],
@@ -91,7 +93,10 @@ closeDropdownOutside() {
       if (control.errors['email']) return 'البريد الإلكتروني غير صحيح';
       if (control.errors['pattern'] && controlName === 'fullName') return 'يجب إدخال الاسم الرباعي كاملاً';
       if (control.errors['pattern'] && controlName === 'phone') return 'رقم الهاتف غير صحيح';
-      if (control.errors['min'] || control.errors['max']) return `سنة غير صحيحة (2010 - ${this.currentYear})`;
+      if (control.errors['min'] || control.errors['max']) {
+        if (controlName === 'age') return 'العمر يجب أن يكون بين 18 و 60';
+        return `سنة غير صحيحة (2010 - ${this.currentYear})`;
+      }
     }
     return '';
   }
@@ -156,7 +161,7 @@ closeDropdownOutside() {
     this.isApplyModalOpen = true;
     this.applySubmitted = false;
     this.previewUrl = null;
-    this.applyForm.reset({ hasExperience: false, address: '', graduationYear: '' });
+    this.applyForm.reset({ hasExperience: false, address: '', graduationYear: '', age: '', birthDate: '' });
     
     if (job.require_cv) this.applyForm.get('cvFile')?.setValidators(Validators.required);
     else this.applyForm.get('cvFile')?.clearValidators();
@@ -217,6 +222,8 @@ closeDropdownOutside() {
     formData.append('email', val.email);
     formData.append('phone', val.phone);
     formData.append('address', val.address);
+    formData.append('birth_date', val.birthDate);
+    formData.append('age', val.age);
     formData.append('university_major', val.major);
     formData.append('graduation_year', val.graduationYear);
     formData.append('job_id', this.selectedJob.id.toString());

@@ -3,11 +3,13 @@ import { Resolve } from '@angular/router';
 import { Observable } from 'rxjs';
 import { EmployeeService } from '../services/employee/employee-service';
 
-@Injectable({ providedIn: 'root' })
-export class EmployeeResolver implements Resolve<any[]> {
+@Injectable({
+  providedIn: 'root'
+})
+export class EmployeeResolver implements Resolve<any> {
   constructor(private employeeService: EmployeeService) {}
 
-  resolve(): Observable<any[]> {
-    return this.employeeService.getEmployees();
+  resolve(): Observable<any> {
+    return this.employeeService.getAllEmployees();
   }
 }

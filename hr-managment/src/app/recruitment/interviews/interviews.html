@@ -18,7 +18,7 @@
   </header>
 
   <div class="interviews-vertical-list">
-    <div class="interview-item-card" *ngFor="let item of interviewees">
+    <div class="interview-item-card" *ngFor="let item of interviewees" [class.finished-card]="item.is_finished == 1">
       <div class="interview-main-content">
         
         <div class="candidate-info-group">
@@ -26,7 +26,12 @@
                (error)="handleImageError($event)" class="avatar">
           <div class="meta">
             <h4>{{ item.full_name }}</h4>
-            <span class="job-badge">{{ item.display_job }}</span>
+            <div class="badges-row">
+              <span class="job-badge">{{ item.display_job }}</span>
+              <span class="status-pill" [class.status-done]="item.is_finished == 1" [class.status-wait]="item.is_finished != 1">
+                {{ item.status_text }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -45,7 +50,7 @@
           <div class="desc-content">
             <i class="fas fa-align-right"></i>
             <p [title]="item.interview_description">
-              {{ item.interview_description || 'مقابلة نظامية (بدون وصف)' }}
+              {{ item.interview_description || 'مقابلة نظامية (من صفحة المراحل)' }}
             </p>
           </div>
         </div>
@@ -57,10 +62,8 @@
             </button>
             <button class="btn-delete" 
                     (click)="deleteInterview(item)" 
-                    [ngStyle]="{
-                      'opacity': item.canDelete ? '1' : '0.4',
-                      'cursor': item.canDelete ? 'pointer' : 'not-allowed'
-                    }"
+                    [style.opacity]="item.canDelete ? '1' : '0.4'"
+                    [style.cursor]="item.canDelete ? 'pointer' : 'not-allowed'"
                     [title]="item.canDelete ? 'حذف المقابلة' : 'لا يمكن حذف المقابلة الأساسية'">
               <i class="fas fa-trash"></i>
             </button>
@@ -71,7 +74,7 @@
     </div>
 
     <div class="empty-state" *ngIf="!loading && interviewees.length === 0">
-       <p>لا توجد مقابلات مجدولة حالياً لهذا التصنيف.</p>
+        <p>لا توجد مقابلات مجدولة حالياً.</p>
     </div>
   </div>
 
@@ -80,21 +83,33 @@
       <h2 class="modal-title-mini">{{ isEditMode ? 'تعديل موعد' : 'جدولة مقابلة' }}</h2>
       
       <div class="input-container">
-        <label>المرشح</label>
-        <select [(ngModel)]="formData.candidate_id" class="modern-input" [disabled]="isEditMode">
+        <label [class.text-danger]="showErrors && !formData.candidate_id">المرشح *</label>
+        <select [(ngModel)]="formData.candidate_id" 
+                class="modern-input" 
+                [class.border-danger]="showErrors && !formData.candidate_id"
+                [disabled]="isEditMode">
           <option value="" disabled>اختر المرشح</option>
           <option *ngFor="let c of allCandidates" [value]="c.id">{{c.full_name}}</option>
         </select>
+        <small class="error-text" *ngIf="showErrors && !formData.candidate_id">يجب اختيار مرشح</small>
       </div>
 
       <div class="row-inputs">
         <div class="input-container">
-          <label>التاريخ</label>
-          <input type="date" [(ngModel)]="formData.interview_date" class="modern-input">
+          <label [class.text-danger]="showErrors && !formData.interview_date">التاريخ *</label>
+          <input type="date" 
+                 [(ngModel)]="formData.interview_date" 
+                 class="modern-input"
+                 [class.border-danger]="showErrors && !formData.interview_date">
+          <small class="error-text" *ngIf="showErrors && !formData.interview_date">التاريخ مطلوب</small>
         </div>
         <div class="input-container">
-          <label>الوقت</label>
-          <input type="time" [(ngModel)]="formData.interview_time" class="modern-input">
+          <label [class.text-danger]="showErrors && !formData.interview_time">الوقت *</label>
+          <input type="time" 
+                 [(ngModel)]="formData.interview_time" 
+                 class="modern-input"
+                 [class.border-danger]="showErrors && !formData.interview_time">
+          <small class="error-text" *ngIf="showErrors && !formData.interview_time">الوقت مطلوب</small>
         </div>
       </div>
 
@@ -103,7 +118,19 @@
         <textarea [(ngModel)]="formData.interview_description" class="modern-input" rows="2" placeholder="أضف وصفاً هنا..."></textarea>
       </div>
 
-      <div class="error-msg" *ngIf="errorMessage">{{errorMessage}}</div>
+    <div class="status-selection">
+  <label class="modern-toggle">
+    <input type="checkbox" [(ngModel)]="formData.is_finished">
+    <div class="toggle-track">
+      <div class="toggle-thumb">
+        <i class="fas" [ngClass]="formData.is_finished ? 'fa-check' : 'fa-clock'"></i>
+      </div>
+    </div>
+    <span class="toggle-label">{{ formData.is_finished ? 'تمت المقابلة' : 'في الانتظار' }}</span>
+  </label>
+</div>
+
+      <div class="error-msg-box" *ngIf="errorMessage">{{errorMessage}}</div>
 
       <div class="action-buttons-mini">
         <button class="btn-cancel-mini" (click)="closeModal()">إلغاء</button>

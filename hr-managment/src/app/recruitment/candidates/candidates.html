@@ -46,7 +46,7 @@
         <h3 class="candidate-name">{{c.full_name}}</h3>
         <div class="info-list">
           <div class="info-item"><i class="fas fa-envelope"></i> {{c.email}}</div>
-          <div class="info-item"><i class="fas fa-phone"></i> {{c.phone}}</div>
+          <div class="info-item"><i class="fas fa-calendar-alt"></i> العمر: {{ c.age }} سنة</div>
         </div>
         <div class="job-tag-wrapper">
           <span class="job-tag">{{ getDisplayJobTitle(c) }}</span>
@@ -69,16 +69,12 @@
                 [src]="previewUrl ? previewUrl : (candidateForm.get('profile_image_url')?.value ? 'http://localhost:3000/uploads/' + candidateForm.get('profile_image_url')?.value : 'assets/unknown.png')" 
                 class="preview-img-circle" 
                 (error)="handleImageError($event)">
-              
               <label *ngIf="!isViewMode" class="camera-overlay-btn" title="تغيير الصورة">
                 <i class="fas fa-camera"></i>
                 <input type="file" (change)="onPhotoSelect($event)" hidden accept="image/*">
               </label>
             </div>
-            
-            <button type="button" class="text-btn-remove" 
-                    *ngIf="!isViewMode && (previewUrl || candidateForm.get('profile_image_url')?.value)" 
-                    (click)="removeImage()">
+            <button type="button" class="text-btn-remove" *ngIf="!isViewMode && (previewUrl || candidateForm.get('profile_image_url')?.value)" (click)="removeImage()">
               <i class="fas fa-trash-alt"></i> حذف الصورة
             </button>
           </div>
@@ -109,6 +105,22 @@
                 <input type="text" formControlName="phone" [class.input-error]="isInvalid(candidateForm, 'phone')" placeholder="07XXXXXXXX">
               </div>
             </div>
+
+           <div class="field">
+  <label>تاريخ الميلاد</label>
+  <div class="input-with-icon">
+    <i class="fas fa-birthday-cake"></i>
+    <input type="date" formControlName="birth_date" [class.input-error]="isInvalid(candidateForm, 'birth_date')">
+  </div>
+</div>
+
+<div class="field">
+  <label>العمر</label>
+  <div class="input-with-icon">
+    <i class="fas fa-hourglass-half"></i>
+    <input type="number" formControlName="age" placeholder="اكتب العمر" [class.input-error]="isInvalid(candidateForm, 'age')">
+  </div>
+</div>
 
             <div class="field">
               <label>مكان السكن</label>
@@ -147,13 +159,8 @@
                   <option value="other">أخرى (مسمى مخصص)</option>
                 </select>
               </div>
-              
               <div *ngIf="isCustomJob" class="fade-in mt-2">
-                <input 
-                  type="text" 
-                  formControlName="custom_job" 
-                  placeholder="اكتب المسمى الوظيفي هنا يدوياً" 
-                  class="premium-input w-full">
+                <input type="text" formControlName="custom_job" placeholder="اكتب المسمى الوظيفي هنا يدوياً" class="premium-input w-full">
               </div>
             </div>
 
@@ -194,10 +201,5 @@
         </button>
       </div>
     </div>
-  </div>
-
-  <div class="empty-state" *ngIf="filteredCandidates.length === 0">
-    <i class="fas fa-users-slash mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-    <p>لا يوجد مرشحون حالياً بهذا الاسم أو الفلتر.</p>
   </div>
 </div>

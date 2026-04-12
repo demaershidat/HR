@@ -24,6 +24,7 @@ export class Candidates implements OnInit {
   currentYear = new Date().getFullYear();
   searchText: string = '';
   selectedJobFilter: any = 'all';
+  joinedCount: number = 0;
 
   jordanGovernorates = ['عمان', 'إربد', 'الزرقاء', 'المفرق', 'الكرك', 'معان', 'الطفيلة', 'مادبا', 'جرش', 'عجلون', 'العقبة', 'البلقاء'];
 
@@ -36,22 +37,19 @@ export class Candidates implements OnInit {
   ) {}
 
   ngOnInit() {
-  this.initForm();
-  this.route.data.subscribe({
-    next: (data) => {
-      this.jobs = data['jobsData'] || [];
-      const rawCandidates = data['candidatesData'] || [];
-      
-      this.joinedCount = rawCandidates.filter((c: any) => c.contract_status === 'تم الانضمام').length;
-
-      this.candidates = rawCandidates
-        .filter((c: any) => c.contract_status !== 'تم الانضمام')
-        .map((c: any) => ({ ...c, showMenu: false }));
-        
-      this.cdr.detectChanges();
-    }
-  });
-}
+    this.initForm();
+    this.route.data.subscribe({
+      next: (data) => {
+        this.jobs = data['jobsData'] || [];
+        const rawCandidates = data['candidatesData'] || [];
+        this.joinedCount = rawCandidates.filter((c: any) => c.contract_status === 'تم الانضمام').length;
+        this.candidates = rawCandidates
+          .filter((c: any) => c.contract_status !== 'تم الانضمام')
+          .map((c: any) => ({ ...c, showMenu: false }));
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   initForm() {
     const fullNamePattern = /^(\s*[^\s]+\s+){3,}[^\s]+\s*$/;
@@ -63,6 +61,8 @@ export class Candidates implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(phonePattern)]],
       address: ['', Validators.required],
+      birth_date: ['', Validators.required],
+      age: ['', [Validators.required, Validators.min(18), Validators.max(70)]],
       university_major: ['', Validators.required],
       graduation_year: ['', [Validators.required, Validators.min(2010), Validators.max(this.currentYear)]],
       job_id: [null, Validators.required],
@@ -77,22 +77,29 @@ export class Candidates implements OnInit {
     });
   }
 
-loadCandidates() {
-  this.candidateService.getAllCandidates().subscribe({
-    next: (data) => {
-      this.joinedCount = data.filter(c => c.contract_status === 'تم Enضمام').length;
-      this.candidates = data
-        .filter(c => c.contract_status !== 'تم الانضمام')
-        .map(c => ({ ...c, showMenu: false }));
-      this.cdr.detectChanges();
-    }
-  });
-}
+  formatDateForInput(dateString: any): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
+  loadCandidates() {
+    this.candidateService.getAllCandidates().subscribe({
+      next: (data) => {
+        this.joinedCount = data.filter(c => c.contract_status === 'تم الانضمام').length;
+        this.candidates = data
+          .filter(c => c.contract_status !== 'تم الانضمام')
+          .map(c => ({ ...c, showMenu: false }));
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   getDisplayJobTitle(c: any): string {
-    if (c.custom_job && c.custom_job.trim() !== '') {
-      return c.custom_job;
-    }
+    if (c.custom_job && c.custom_job.trim() !== '') return c.custom_job;
     const job = this.jobs.find(j => j.id == c.job_id);
     return job ? job.job_title : (c.job_title || 'لم يحدد');
   }
@@ -120,12 +127,30 @@ loadCandidates() {
     this.photoWasRemoved = false;
     this.candidateForm.enable();
     this.isCustomJob = !!candidate.custom_job;
-    this.candidateForm.patchValue({
+    
+    const formattedData = {
       ...candidate,
+      birth_date: this.formatDateForInput(candidate.birth_date),
       job_id: candidate.job_id || (candidate.custom_job ? 'other' : null)
-    });
+    };
+
+    this.candidateForm.patchValue(formattedData);
     this.previewUrl = null;
     candidate.showMenu = false;
+  }
+
+  viewCandidate(c: any) {
+    this.isViewMode = true;
+    this.showAddModal = true;
+    
+    const formattedData = {
+      ...c,
+      birth_date: this.formatDateForInput(c.birth_date)
+    };
+
+    this.candidateForm.patchValue(formattedData);
+    this.candidateForm.disable();
+    c.showMenu = false;
   }
 
   submitCandidate() {
@@ -133,7 +158,6 @@ loadCandidates() {
       this.candidateForm.markAllAsTouched();
       return;
     }
-
     const formData = new FormData();
     const formValues = this.candidateForm.getRawValue();
 
@@ -148,22 +172,14 @@ loadCandidates() {
     if (this.photoWasRemoved && !this.selectedPhoto) formData.append('removePhoto', 'true');
 
     const id = formValues.id;
-    const request = id 
-      ? this.candidateService.updateCandidate(id, formData) 
-      : this.candidateService.addCandidate(formData);
-
+    const request = id ? this.candidateService.updateCandidate(id, formData) : this.candidateService.addCandidate(formData);
     request.subscribe({
-      next: () => {
-        this.closeModal();
-        this.loadCandidates();
-      },
+      next: () => { this.closeModal(); this.loadCandidates(); },
       error: (err) => console.error(err)
     });
   }
 
-  onJobSelect(event: any) {
-    this.isCustomJob = event.target.value === 'other';
-  }
+  onJobSelect(event: any) { this.isCustomJob = event.target.value === 'other'; }
 
   removeImage() {
     this.previewUrl = null;
@@ -191,18 +207,11 @@ loadCandidates() {
   closeModal() {
     this.showAddModal = false;
     this.candidateForm.reset();
+    this.candidateForm.enable();
     this.previewUrl = null;
     this.selectedCv = null;
     this.selectedPhoto = null;
     this.photoWasRemoved = false;
-  }
-
-  viewCandidate(c: any) {
-    this.isViewMode = true;
-    this.showAddModal = true;
-    this.candidateForm.patchValue(c);
-    this.candidateForm.disable();
-    c.showMenu = false;
   }
 
   toggleMenu(event: Event, c: any) {
@@ -226,18 +235,17 @@ loadCandidates() {
 
   openCv() {
     const cvUrl = this.candidateForm.get('cv_url')?.value;
-    if (cvUrl) {
-      window.open(`http://localhost:3000/uploads/${cvUrl}`, '_blank');
-    }
+    if (cvUrl) window.open(`http://localhost:3000/uploads/${cvUrl}`, '_blank');
   }
 
   get filteredCandidates() {
     return this.candidates.filter(c => {
-      const matchesSearch = c.full_name.toLowerCase().includes(this.searchText.toLowerCase()) || 
-                            c.email.toLowerCase().includes(this.searchText.toLowerCase());
+      const name = c.full_name || '';
+      const email = c.email || '';
+      const matchesSearch = name.toLowerCase().includes(this.searchText.toLowerCase()) || 
+                            email.toLowerCase().includes(this.searchText.toLowerCase());
       const matchesJob = this.selectedJobFilter === 'all' || c.job_id == this.selectedJobFilter;
       return matchesSearch && matchesJob;
     });
   }
-  joinedCount: number = 0;
 }

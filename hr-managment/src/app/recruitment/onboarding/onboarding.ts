@@ -77,17 +77,34 @@ export class Onboarding implements OnInit {
     this.candidateService.updateCandidate(candidate.id, { contract_status: newStatus }).subscribe({
       next: () => {
         if (newStatus === 'تم الانضمام') {
-          const newEmployee = {
+          const formData = new FormData();
+          const employeeData: any = {
             candidate_id: candidate.id,
-            job_id: candidate.job_id || null,
-            custom_job: candidate.custom_job || null,
             full_name: candidate.full_name,
             email: candidate.email,
-            phone: candidate.phone || null,
-            salary: candidate.expected_salary || null,
-            profile_image_url: candidate.profile_image_url || null
+            phone: candidate.phone,
+            address: candidate.address,
+            birth_date: candidate.birth_date ? candidate.birth_date.split('T')[0] : null,
+            age: candidate.age,
+            university_major: candidate.university_major,
+            graduation_year: candidate.graduation_year,
+            job_id: candidate.job_id || null,
+            custom_job: candidate.custom_job || null,
+            salary: candidate.expected_salary || 0,
+            profile_image_url: candidate.profile_image_url,
+            cv_url: candidate.cv_url,
+            status: 'active',
+            contract_type: 'دوام كامل',
+            career_level: 'Junior'
           };
-          this.employeeService.addEmployee(newEmployee).subscribe({
+
+          Object.keys(employeeData).forEach(key => {
+            if (employeeData[key] !== null && employeeData[key] !== undefined) {
+              formData.append(key, employeeData[key]);
+            }
+          });
+
+          this.employeeService.addEmployee(formData).subscribe({
             next: () => {
               this.hiredCandidates = this.hiredCandidates.filter(c => c.id !== candidate.id);
               this.cdr.detectChanges();
@@ -99,5 +116,7 @@ export class Onboarding implements OnInit {
     });
   }
 
-  handleImageError(event: any) { (event.target as HTMLImageElement).src = 'assets/unknown.png'; }
+  handleImageError(event: any) { 
+    (event.target as HTMLImageElement).src = 'assets/unknown.png'; 
+  }
 }

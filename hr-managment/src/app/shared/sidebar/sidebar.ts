@@ -12,11 +12,15 @@ export class Sidebar {
 
   toggleRecruitment(): void {
     this.isRecruitmentOpen = !this.isRecruitmentOpen;
-    if (this.isRecruitmentOpen) this.isEmployeesOpen = false;
+    if (this.isRecruitmentOpen) {
+      this.isEmployeesOpen = false;
+    }
   }
 
   toggleEmployees(): void {
     this.isEmployeesOpen = !this.isEmployeesOpen;
-    if (this.isEmployeesOpen) this.isRecruitmentOpen = false;
+    if (this.isEmployeesOpen) {
+      this.isRecruitmentOpen = false;
+    }
   }
 }

@@ -169,6 +169,22 @@
             </div>
 
             <div class="field-custom">
+              <label>تاريخ الميلاد</label>
+              <input type="date" formControlName="birthDate" [class.input-error]="isInvalid(applyForm, 'birthDate')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'birthDate')">
+                <i class="fas fa-exclamation-circle"></i> {{getErrorMessage(applyForm, 'birthDate')}}
+              </div>
+            </div>
+
+            <div class="field-custom">
+              <label>العمر</label>
+              <input type="number" formControlName="age" placeholder="العمر" [class.input-error]="isInvalid(applyForm, 'age')">
+              <div class="validation-msg" *ngIf="isInvalid(applyForm, 'age')">
+                <i class="fas fa-exclamation-circle"></i> {{getErrorMessage(applyForm, 'age')}}
+              </div>
+            </div>
+
+            <div class="field-custom">
               <label>مكان السكن</label>
               <select formControlName="address" [class.input-error]="isInvalid(applyForm, 'address')">
                 <option value="">اختر المحافظة</option>

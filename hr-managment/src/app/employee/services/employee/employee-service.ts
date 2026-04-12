@@ -6,16 +6,20 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class EmployeeService {
-  private apiUrl = 'http://localhost:3000/employees'; 
+  private apiUrl = 'http://localhost:3000/employees';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  getEmployees(): Observable<any[]> {
+  getAllEmployees(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  addEmployee(employee: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, employee);
+  addEmployee(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add`, formData);
+  }
+
+  updateEmployee(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update/${id}`, formData);
   }
 
   deleteEmployee(id: number): Observable<any> {

@@ -1,81 +1,230 @@
-<div class="admin-layout" dir="rtl">
-  <header class="glass-header">
-    <div class="title-section">
-      <h1>سجل الموظفين</h1>
-      <p>إدارة بيانات الموظفين الحاليين في النظام</p>
+<div class="candidates-container" dir="rtl">
+  <div class="header-modern">
+    <div class="title-group">
+      <h1>إدارة الموظفين</h1>
+      <p>متابعة الكادر الوظيفي لشركة Solid Soft</p>
     </div>
-
-    <div class="header-controls">
-      <div class="count-pill">إجمالي الموظفين: {{ employees.length }}</div>
-    </div>
-  </header>
-
-  <div class="controls-group">
-    <button class="btn-add" (click)="openAddModal()">
-      <i class="fas fa-plus"></i> موظف جديد
-    </button>
-
-    <div class="search-wrapper">
-      <i class="fas fa-search"></i>
-      <input 
-        type="text" 
-        [(ngModel)]="searchText" 
-        placeholder="بحث عن موظف..." 
-        class="premium-input">
+    <div class="controls-group">
+      <button class="btn-add" (click)="openAddModal()">
+        <i class="fas fa-plus"></i> موظف جديد
+      </button>
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" [(ngModel)]="searchText" (input)="applyFilter()" placeholder="بحث عن موظف..." class="premium-input">
+      </div>
     </div>
   </div>
 
-  <div class="candidates-grid" *ngIf="filteredEmployees.length > 0">
-    <div class="candidate-card" *ngFor="let emp of filteredEmployees">
-      
-      <div class="card-options-container">
-        <button class="options-btn" (click)="toggleMenu(emp)">
-          <i class="fas fa-ellipsis-v"></i>
+  <div class="candidates-grid">
+    <div class="candidate-card" *ngFor="let e of filteredEmployees" [class.incomplete-bg]="isWorkDataIncomplete(e)">
+      <div class="card-header">
+        <div class="avatar-wrapper">
+          <img [src]="e.profile_image_url ? 'http://localhost:3000/uploads/' + e.profile_image_url : 'assets/unknown.png'" 
+               class="circular-img" (error)="handleImageError($event)">
+        </div>
+        
+        <div class="menu-container">
+          <button class="dots-btn" (click)="toggleMenu(e)">⋮</button>
+          <div class="dropdown-panel shadow-lg" *ngIf="e.showMenu">
+            <button class="menu-item" (click)="viewEmployee(e)">
+              <i class="fas fa-eye"></i> عرض التفاصيل
+            </button>
+            <button class="menu-item" (click)="editEmployee(e)">
+              <i class="fas fa-edit"></i> تعديل البيانات
+            </button>
+            <div class="menu-divider"></div>
+            <button class="menu-item delete" (click)="deleteEmployee(e.id)">
+              <i class="fas fa-trash"></i> حذف الموظف
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <h3 class="candidate-name">{{e.full_name}}</h3>
+        <div class="info-list">
+          <div class="info-item"><i class="fas fa-briefcase"></i> {{e.display_job}}</div>
+          <div class="info-item"><i class="fas fa-phone"></i> {{e.phone}}</div>
+          <div class="info-item"><i class="fas fa-envelope"></i> {{e.email}}</div>
+          
+          <div class="incomplete-warning" *ngIf="isWorkDataIncomplete(e)">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>البيانات الوظيفية غير مكتملة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal-container shadow-2xl">
+      <div class="modal-header-modern">
+        <h2>{{ isViewMode ? 'تفاصيل الموظف' : (employeeForm.get('id')?.value ? 'تعديل بيانات الموظف' : 'إضافة موظف جديد') }}</h2>
+      </div>
+
+      <div class="tabs-navigation">
+        <button class="tab-btn" [class.active]="activeTab === 'personal'" (click)="activeTab = 'personal'">
+          <i class="fas fa-user-circle"></i> المعلومات الشخصية
         </button>
-        
-        <div class="options-menu" *ngIf="emp.showMenu">
-          <button class="menu-item" (click)="viewDetails(emp)">
-            <i class="far fa-eye"></i>
-            <span>عرض التفاصيل</span>
-          </button>
-          <button class="menu-item" (click)="editEmployee(emp)">
-            <i class="far fa-edit"></i>
-            <span>تعديل البيانات</span>
-          </button>
-          <button class="menu-item delete-item" (click)="deleteEmp(emp.id)">
-            <i class="far fa-trash-alt"></i>
-            <span>حذف الموظف</span>
-          </button>
-        </div>
+        <button class="tab-btn" [class.active]="activeTab === 'work'" (click)="activeTab = 'work'">
+          <i class="fas fa-briefcase"></i> المعلومات الوظيفية
+        </button>
       </div>
 
-      <div class="card-content">
-        <div class="profile-img-wrapper">
-          <img [src]="emp.profile_image_url ? 'http://localhost:3000/uploads/' + emp.profile_image_url : 'assets/unknown.png'" 
-               (error)="handleImageError($event)" alt="profile">
+      <div class="modal-body-scroll">
+        <div class="center-avatar-section" *ngIf="activeTab === 'personal'">
+          <div class="avatar-upload-wrapper">
+            <div class="image-frame-circle shadow-md">
+              <img [src]="previewUrl ? previewUrl : (employeeForm.get('profile_image_url')?.value ? 'http://localhost:3000/uploads/' + employeeForm.get('profile_image_url')?.value : 'assets/unknown.png')" 
+                   class="preview-img-circle" (error)="handleImageError($event)">
+              <label *ngIf="!isViewMode" class="camera-overlay-btn">
+                <i class="fas fa-camera"></i>
+                <input type="file" hidden accept="image/*" (change)="onPhotoSelect($event)">
+              </label>
+            </div>
+            <button type="button" class="text-btn-remove" *ngIf="!isViewMode && (previewUrl || employeeForm.get('profile_image_url')?.value)" (click)="removeImage()">
+              <i class="fas fa-trash-alt"></i> حذف الصورة
+            </button>
+          </div>
         </div>
 
-        <h4 class="emp-name">{{ emp.full_name }}</h4>
-        
-        <div class="info-row">
-          <i class="fas fa-envelope"></i>
-          <span>{{ emp.email }}</span>
-        </div>
-        
-        <div class="info-row">
-          <i class="fas fa-phone"></i>
-          <span>{{ emp.phone || '0776666666' }}</span>
-        </div>
+        <form [formGroup]="employeeForm" class="modern-form">
+          
+          <div class="tab-content" *ngIf="activeTab === 'personal'">
+            <div class="form-grid">
+              <div class="field full">
+                <label>الاسم الرباعي الكامل <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-user"></i>
+                  <input type="text" formControlName="full_name" [class.error-border]="isInvalid('full_name')" placeholder="مثال: أحمد محمد علي حسن">
+                </div>
+                <div class="error-text" *ngIf="isInvalid('full_name')">يجب إدخال الاسم الرباعي كاملاً</div>
+              </div>
 
-        <div class="job-badge">
-          {{ emp.job_title }}
-        </div>
+              <div class="field">
+                <label>تاريخ الميلاد <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-calendar-alt"></i>
+                  <input type="date" formControlName="birth_date" [class.error-border]="isInvalid('birth_date')">
+                </div>
+              </div>
+
+              <div class="field">
+                <label>العمر <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-hourglass-half"></i>
+                  <input type="number" formControlName="age" [class.error-border]="isInvalid('age')">
+                </div>
+              </div>
+
+              <div class="field">
+                <label>مكان السكن <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <select formControlName="address" [class.error-border]="isInvalid('address')">
+                    <option value="">اختر المحافظة</option>
+                    <option *ngFor="let g of jordanGovernorates" [value]="g">{{g}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>رقم الهاتف <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-phone"></i>
+                  <input type="text" formControlName="phone" [class.error-border]="isInvalid('phone')" placeholder="07XXXXXXXX">
+                </div>
+              </div>
+
+              <div class="field full">
+                <label>البريد الإلكتروني <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-envelope"></i>
+                  <input type="email" formControlName="email" [class.error-border]="isInvalid('email')">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-content" *ngIf="activeTab === 'work'">
+            <div class="form-grid">
+              <div class="field full">
+                <label>المسمى الوظيفي <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-briefcase"></i>
+                  <select formControlName="job_id" (change)="onJobSelect($event)" [class.error-border]="isInvalid('job_id')">
+                    <option [value]="null">اختر الوظيفة</option>
+                    <option *ngFor="let j of jobs" [value]="j.id">{{j.job_title}}</option>
+                    <option value="other">أخرى (مخصص)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field" *ngIf="isCustomJob">
+                <label>وظيفة مخصصة <span class="star">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fas fa-tools"></i>
+                  <input type="text" formControlName="custom_job" [class.error-border]="isInvalid('custom_job')">
+                </div>
+              </div>
+
+              <div class="field">
+                <label>تاريخ التعيين</label>
+                <div class="input-with-icon"><i class="fas fa-calendar-check"></i><input type="date" formControlName="hire_date"></div>
+              </div>
+
+              <div class="field">
+                <label>نوع العقد</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-file-contract"></i>
+                  <select formControlName="contract_type">
+                    <option *ngFor="let ct of contractTypes" [value]="ct">{{ct}}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>الحالة الوظيفية</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-user-clock"></i>
+                  <select formControlName="status">
+                    <option value="active">على رأس عمله</option>
+                    <option value="on_leave">في إجازة</option>
+                    <option value="terminated">منتهي الخدمة</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>الراتب (JOD)</label>
+                <div class="input-with-icon"><i class="fas fa-money-bill-wave"></i><input type="number" formControlName="salary"></div>
+              </div>
+
+              <div class="field">
+                <label>رقم الحساب (IBAN)</label>
+                <div class="input-with-icon"><i class="fas fa-university"></i><input type="text" formControlName="iban"></div>
+              </div>
+
+              <div class="field">
+                  <label>الضمان الاجتماعي</label>
+                  <div class="input-with-icon"><i class="fas fa-shield-alt"></i><input type="text" formControlName="social_security"></div>
+              </div>
+
+              <div class="field full">
+                <label>العهدة المستلمة</label>
+                <textarea rows="2" formControlName="assets_notes" class="premium-textarea" placeholder="لابتوب، شاشة، إلخ..."></textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer-modern">
+        <button class="btn-cancel" (click)="closeModal()">إلغاء</button>
+        <button class="btn-save shadow-md" *ngIf="!isViewMode" (click)="submitEmployee()">
+          <i class="fas fa-check"></i> حفظ البيانات
+        </button>
       </div>
     </div>
-  </div>
-
-  <div class="empty-state" *ngIf="filteredEmployees.length === 0">
-    <i class="fas fa-users-slash"></i>
-    <p>لا يوجد موظفون يطابقون البحث.</p>
   </div>
 </div>
